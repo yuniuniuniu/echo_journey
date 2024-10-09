@@ -16,6 +16,7 @@ message DownwardMessage {
 
 message TutorMessage {
     string text = 1;
+    repeated WordCorrectMessage expected_messages = 2;
 }
 
 message WordCorrectMessage {
@@ -26,6 +27,7 @@ message WordCorrectMessage {
 }
 
 message SentenceCorrectMessage {
-    repeated WordCorrectMessage messages = 1;
-    string suggestions = 2;
+    repeated WordCorrectMessage expected_messages = 1;
+    repeated WordCorrectMessage messages = 2;
+    string suggestions = 3;
 }
