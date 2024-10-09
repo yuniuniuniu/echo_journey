@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package echo_journey.upward;
+
+enum UpwardMessageType {
+    UNKNOWN = 0;
+    STUDENT_MESSAGE = 1;
+    AUDIO_MESSAGE = 2;
+}
+
+message UpwardMessage {
+    UpwardMessageType type = 1;
+    bytes payload = 2;
+}
+
+message StudentMessage {
+    string text = 1;
+}
+
+message AudioMessage {
+    string expected_sentence = 1;
+    bytes audio_data = 2;
+}

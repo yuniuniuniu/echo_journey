@@ -1,0 +1,29 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python Debugger: FastAPI",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "uvicorn",
+            "args": [
+                "echo_journey.main:app",
+                "--reload"
+            ],
+            "jinja": true,
+            "cwd": "${workspaceFolder}/echo_journey"
+        },
+        {
+            "name": "pytest",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "pytest",
+            "args": [
+                "tests/test_process.py",
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "cwd": "/home/trader/echo_journey"
+        },
+    ]
+}
