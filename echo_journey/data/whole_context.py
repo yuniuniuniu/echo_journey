@@ -18,47 +18,7 @@ class WholeContext():
     def __init__(self):
         self.cur_visible_assistant: AssistantMeta = None
         self.cur_chat_history: list[dict] = []
-        self.original_messages: list[dict] = []
         self.llm = create_llm("gpt4-ptu-online")
-        self.additional_args = ""
-
-    def get_original_messages(self):
-        return self.original_messages
-
-    @classmethod
-    def build_from_context_dict(cls, cur_context_dict: dict):
-        cur_visible_assistant = AssistantMeta(
-            assistant_name=cur_context_dict.get("assistant_name", ""),
-            branch=cur_context_dict.get("branch", ""),
-            assistant_version=cur_context_dict.get("assistant_version", ""),
-            content=AssistantContent(cur_context_dict),
-        )
-        # 兼容原有notion中的context
-        old_chat_history: dict = cur_context_dict.get("chat_history_of", {})
-        if not old_chat_history:
-            cur_chat_history = cur_context_dict.get("cur_chat_history", [])
-        else:
-            cur_chat_history = old_chat_history.get(
-                cur_visible_assistant.assistant_name, []
-            )
-        return WholeContext.rebuild_from(
-            cur_visible_assistant,
-            cur_chat_history,
-        )
-
-    def to_dict(self):
-        cur_context_dict = self.cur_visible_assistant.to_dict()
-        cur_context_dict["cur_chat_history"] = self.cur_chat_history
-        cur_context_dict["original_messages"] = self.original_messages
-        return cur_context_dict
-
-    def to_json(self):
-
-        cur_context_dict = self.to_dict()
-        whole_context_in_json = json.dumps(
-            cur_context_dict, indent=4, ensure_ascii=False
-        )
-        return whole_context_in_json
 
     def add_user_msg_to_cur(self, user_msg_dict: dict):
         user_msg_dict["timestamp"] = round(time.time(), 3)
@@ -90,10 +50,6 @@ class WholeContext():
         self.cur_chat_history.append(user_msg_dict)
         self.original_messages.append(user_msg_dict)
 
-    def overwrite_last_assitant_msg(self, assistant_msg: str):
-        self.cur_chat_history[-1]["content"] = assistant_msg
-        self.original_messages[-1]["content"] = assistant_msg
-
     def add_assistant_msg_to_cur(self, assistant_msg_dict: dict):
         assistant_msg_dict["timestamp"] = round(time.time(), 3)
         self.cur_chat_history.append(assistant_msg_dict)
@@ -111,13 +67,6 @@ class WholeContext():
         if not self.cur_chat_history:
             return None
         return self.cur_chat_history[-1]["role"]
-
-    def append_user_msg_to_last(self, raw_user_input: str):
-        self.cur_chat_history[-1]["content"] += raw_user_input
-
-    def rewrite_user_msg_to_last(self, user_input: str, raw_user_input: str):
-        self.cur_chat_history[-1]["content"] = user_input
-        self.cur_chat_history[-1]["raw_content"] = raw_user_input
 
     def user_visible_msgs_view_commit_full_history(self, prefix_messages_in_list):
         chat_history_with_prefix_msgs = prefix_messages_in_list + self.cur_chat_history
@@ -194,31 +143,16 @@ class WholeContext():
         self.cur_chat_history = copy.deepcopy(messages)
         self.original_messages = copy.deepcopy(messages)
 
-    def build_with(
-        self,
-        last_whole_context,
-    ):
-        return self.rebuild_from(
-            self.cur_visible_assistant,
-            last_whole_context.cur_chat_history,
-            self.trace_info,
-            self.llm,
-        )
-
     @classmethod
-    def rebuild_from(
+    def build_from(
         cls,
         assistant_meta: AssistantMeta,
         chat_history: list[dict] = [],
         llm: LLM = create_llm("gpt4-ptu-online"),
-        additional_args: str = None,
     ):
         result = WholeContext()
         result.cur_visible_assistant = assistant_meta
-        if additional_args:
-            result.additional_args = additional_args
         result.cur_chat_history = copy.deepcopy(chat_history)
-        result.original_messages = copy.deepcopy(chat_history)
         result.llm = llm
         return result
 
@@ -265,9 +199,6 @@ class WholeContext():
         return result
 
     async def bot_async(self, submittable_msgs: list[dict]):
-        teacher_pattern = AssistantMeta.get_user_visible_pattern(
-            self.cur_visible_assistant.assistant_name
-        )
         merged_response = {}
         assistant_res = []
 
