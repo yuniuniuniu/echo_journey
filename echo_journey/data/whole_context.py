@@ -4,27 +4,21 @@ import time
 
 import tiktoken
 import yaml
-
-from data.data.base_context import BaseContext
-from data.data.trace_info import TraceInfo
-from data.llm import LLM, merge_deltas
-from data.llm_utils import create_llm
-from data.utils import (
+from echo_journey.data.llm import LLM, merge_deltas
+from echo_journey.data.llm_utils import create_llm
+from echo_journey.data.utils import (
     encode_image,
     encode_image_bytes,
-    extract_addtional_args_from_str,
-    fill_str_with_additional_args_dict,
 )
 from .assistant_meta import AssistantMeta
 from .assistant_content import AssistantContent
 
 
-class WholeContext(BaseContext):
+class WholeContext():
     def __init__(self):
         self.cur_visible_assistant: AssistantMeta = None
         self.cur_chat_history: list[dict] = []
         self.original_messages: list[dict] = []
-        self.trace_info = TraceInfo(round_trace_id=0, round_started_at=0)
         self.llm = create_llm("gpt4-ptu-online")
         self.additional_args = ""
 
@@ -146,13 +140,9 @@ class WholeContext(BaseContext):
         return chat_history_with_prefix_msgs
 
     def format_system_and_history(self):
-        additional_args_dict = extract_addtional_args_from_str(self.additional_args)
-        system_prompt = fill_str_with_additional_args_dict(
-            additional_args_dict, self.cur_visible_assistant.content.system_prompt
-        )
-        prefix_messages = fill_str_with_additional_args_dict(
-            additional_args_dict, self.cur_visible_assistant.content.prefix_messages
-        )
+        system_prompt = self.cur_visible_assistant.content.system_prompt
+        
+        prefix_messages = self.cur_visible_assistant.content.prefix_messages
         prefix_messages_in_list = yaml.safe_load(prefix_messages)
         prefix_messages_in_list = (
             [] if not prefix_messages_in_list else prefix_messages_in_list
@@ -220,7 +210,6 @@ class WholeContext(BaseContext):
         cls,
         assistant_meta: AssistantMeta,
         chat_history: list[dict] = [],
-        trace_info: TraceInfo = TraceInfo(round_trace_id=0, round_started_at=0),
         llm: LLM = create_llm("gpt4-ptu-online"),
         additional_args: str = None,
     ):
@@ -230,7 +219,6 @@ class WholeContext(BaseContext):
             result.additional_args = additional_args
         result.cur_chat_history = copy.deepcopy(chat_history)
         result.original_messages = copy.deepcopy(chat_history)
-        result.trace_info = copy.deepcopy(trace_info)
         result.llm = llm
         return result
 
@@ -283,10 +271,6 @@ class WholeContext(BaseContext):
         merged_response = {}
         assistant_res = []
 
-        first_token_timestamp = 0
-        first_visable_token_timestamp = 0
-
-        commit_timestamp = round(time.time(), 3)
         async for delta_in_token, is_restart_commit in self._async_commit_to_llm(
             self.cur_visible_assistant, submittable_msgs
         ):
@@ -297,13 +281,6 @@ class WholeContext(BaseContext):
             new_deltas_per_char = self.split_delta_in_chars(delta_in_token)
             for delta in new_deltas_per_char:
                 merged_response = merge_deltas(merged_response, delta)
-                if first_token_timestamp == 0:
-                    first_token_timestamp = round(time.time(), 3)
-                if (
-                    teacher_pattern in merged_response.get("content", "")
-                    and first_visable_token_timestamp == 0
-                ):
-                    first_visable_token_timestamp = round(time.time(), 3)
                 if (
                     "content" in merged_response
                     and "role" in merged_response
@@ -315,18 +292,6 @@ class WholeContext(BaseContext):
                             "content": merged_response["content"],
                         }
                     ], delta
-
-        complete_timestamp = round(time.time(), 3)
-        round_trace_id = self.trace_info.round_trace_id
-        if complete_timestamp - first_token_timestamp > 0:
-            time_per_token = self.get_token_count(merged_response["content"]) / (
-                complete_timestamp - first_token_timestamp
-            )
-        else:
-            time_per_token = -1
-        merged_response["stat"] = (
-            f"==traceId==:{round_trace_id}\n==stat==CIT: {commit_timestamp}, FLT: {first_token_timestamp} ,FVT: {first_visable_token_timestamp} , CPT: {complete_timestamp}, FVTL: {first_visable_token_timestamp - commit_timestamp}, FTD: {first_token_timestamp - commit_timestamp}, TPT: {time_per_token}"
-        )
 
         if "content" not in merged_response:
             merged_response["content"] = ""
@@ -345,32 +310,9 @@ class WholeContext(BaseContext):
         enc = tiktoken.get_encoding("cl100k_base")
         return len(enc.encode(text))
 
-    def deal_with_user_input(self, raw_user_input_dict: dict):
-        import re
-
-        if not re.search(r"\{\{.*?\}\}", raw_user_input_dict["raw_content"]):
-            raw_user_input_dict["content"] = (
-                self.cur_visible_assistant.content.user_prompt_prefix
-                + raw_user_input_dict["raw_content"]
-            )
-        else:
-            raw_user_input_dict["content"] = fill_str_with_additional_args_dict(
-                self.cur_visible_assistant.content.user_prompt_prefix,
-                {"STUDENT": raw_user_input_dict["raw_content"]},
-            )
-        dealt_user_input_dict = copy.deepcopy(raw_user_input_dict)
-        if self.get_role_of_last_msg() == "user":
-            self.rewrite_user_msg_to_last(
-                dealt_user_input_dict["content"], dealt_user_input_dict["raw_content"]
-            )
-        else:
-            self.add_user_msg_to_cur(dealt_user_input_dict)
-        return dealt_user_input_dict
-
     async def travel_with_generator(
         self,
         cur_round_user_msg_info: dict,
-        trace_info: TraceInfo,
         llm: LLM = None,
     ):
         self.llm = llm if llm else self.llm
@@ -382,11 +324,9 @@ class WholeContext(BaseContext):
     async def travel_with_callback(
         self,
         cur_round_user_msg_info: dict,
-        trace_info: TraceInfo,
         llm: LLM,
         on_new_delta: callable,
     ):
-        self.trace_info = trace_info
         last_bot_res = []
         bot_req = self.cur_chat_history[-1]
         self.llm = llm if llm else self.llm

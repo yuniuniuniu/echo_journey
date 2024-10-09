@@ -1,9 +1,6 @@
 from echo_journey.api.downward_protocol_handler import DownwardProtocolHandler
-from echo_journey.api.proto.downward_pb2 import TutorMessage, WordCorrectMessage
 from echo_journey.api.proto.upward_pb2 import StudentMessage
 from echo_journey.common.utils import parse_pinyin
-from echo_journey.data.data.whole_context import WholeContext
-
 
 class TalkPractiseService:
     def __init__(self, session_id, ws_msg_handler):
