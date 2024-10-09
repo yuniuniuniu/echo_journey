@@ -44,7 +44,7 @@ async def websocket_talk_practise(
             if isinstance(upward_message, StudentMessage):
                 await talk_practise_service.process_student_message(upward_message)
             elif isinstance(upward_message, AudioMessage):
-                await talk_practise_service.process_audio_message(upward_message)
+                await talk_practise_service.process_audio_message(upward_message, platform)
             else:
                 raise ValueError(f"Unknown message type: {upward_message.type}")
     except WebSocketDisconnect:

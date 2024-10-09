@@ -39,8 +39,8 @@ class Kanyun(SpeechToText, Singleton):
 
         if platform == "web":
             audio = self._convert_webm_to_wav(audio_bytes, False)
-        elif platform == "test":
-            audio = audio_bytes
+        elif platform == "mobile":
+            pass
         else:
             audio = self._convert_bytes_to_wav(audio_bytes, False)
 
