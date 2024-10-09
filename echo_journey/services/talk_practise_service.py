@@ -1,6 +1,10 @@
+import yaml
 from echo_journey.api.downward_protocol_handler import DownwardProtocolHandler
 from echo_journey.api.proto.upward_pb2 import StudentMessage
 from echo_journey.common.utils import parse_pinyin
+from echo_journey.data.assistant_content import AssistantContent
+from echo_journey.data.assistant_meta import AssistantMeta
+from echo_journey.data.whole_context import WholeContext
 
 class TalkPractiseService:
     def __init__(self, session_id, ws_msg_handler):
@@ -9,12 +13,17 @@ class TalkPractiseService:
         self.main_chat_context = None
         
     async def initialize(self):
-        # self.main_chat_context = WholeContext.build_from_context_dict()
-        expected_messages = parse_pinyin("咖啡")  
-        await self.ws_msg_handler.send_tutor_message(text="我们一起来练习咖啡这个单词吧", expected_messages=expected_messages)
+        content = yaml.safe_load(open("echo_journey/services/meta/talk_practise.yaml", "r"))
+        talk_assistant = AssistantMeta(assistant_name="talk_assistant", content=AssistantContent(content=content))
+        self.main_chat_context = WholeContext.build_from(assistant_meta=talk_assistant)
+        treating_message = "那你今天有什么想聊的话题呢？可以跟我说说，如果没什么的想法的话我就给你推荐几个日常的"
+        self.main_chat_context.add_assistant_msg_to_cur({"role": "assistant", "content": treating_message})
+        await self.ws_msg_handler.send_tutor_message(text=treating_message)
         
     async def process_student_message(self, student_message: StudentMessage):
-        
+        student_text = student_message.text
+        self.main_chat_context.add_assistant_msg_to_cur({"role": "user", "content": student_text})
+        # 这里返回文字及需要练习的拼音
         await self.ws_msg_handler.send_tutor_message(text="来，你再读一下")
 
     
