@@ -1,12 +1,12 @@
 import asyncio
 import copy
+import logging
 import time
 
 import openai
 
 from ..llm import LLM
-from ..my_logger import LOGGER
-
+logger = logging.getLogger(__name__)
 
 class OpenaiLLM(LLM):
     def __init__(self, config_name="OpenaiLLM", **kwargs):
@@ -60,7 +60,7 @@ class OpenaiLLM(LLM):
                 return response.choices[0]["message"]["content"]
             except Exception as e:
                 retry_count += 1
-                LOGGER.exception(
+                logger.exception(
                     "commit_to_llm failed, retry count: {}, messages: {}",
                     retry_count,
                     messages,
@@ -112,7 +112,7 @@ class OpenaiLLM(LLM):
                         await asyncio.sleep(0)
                 break
             except Exception as e:
-                LOGGER.exception(
+                logger.exception(
                     "commit_to_llm_async failed, retry messages: {}",
                     messages,
                 )

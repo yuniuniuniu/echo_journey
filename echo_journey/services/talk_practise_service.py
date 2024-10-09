@@ -1,6 +1,7 @@
 import yaml
 from echo_journey.api.downward_protocol_handler import DownwardProtocolHandler
-from echo_journey.api.proto.upward_pb2 import StudentMessage
+from echo_journey.api.proto.upward_pb2 import AudioMessage, StudentMessage
+from echo_journey.audio.speech_to_text.kanyun import Kanyun
 from echo_journey.common.utils import parse_pinyin
 from echo_journey.data.assistant_content import AssistantContent
 from echo_journey.data.assistant_meta import AssistantMeta
@@ -11,6 +12,7 @@ class TalkPractiseService:
         self.session_id = session_id
         self.ws_msg_handler: DownwardProtocolHandler = ws_msg_handler
         self.main_chat_context = None
+        self.asr: Kanyun = Kanyun.get_instance()
         
     async def initialize(self):
         content = yaml.safe_load(open("echo_journey/services/meta/talk_practise.yaml", "r"))
@@ -22,14 +24,16 @@ class TalkPractiseService:
         
     async def process_student_message(self, student_message: StudentMessage):
         student_text = student_message.text
-        self.main_chat_context.add_assistant_msg_to_cur({"role": "user", "content": student_text})
+        self.main_chat_context.add_user_msg_to_cur({"role": "user", "content": student_text})
         # 这里返回文字及需要练习的拼音
         await self.ws_msg_handler.send_tutor_message(text="来，你再读一下")
-
     
-    async def process_audio_message(self, audio_message):
-        expected_messages = parse_pinyin("咖啡")  
-        messages = parse_pinyin("啊微")
+    async def process_audio_message(self, audio_message: AudioMessage, platform):
+        expected_messages = parse_pinyin(audio_message.expected_sentence)  
+        asr_result = self.asr.transcribe(audio_message.audio_data, platform)
+        messages = parse_pinyin(asr_result)
+        
+        # suggestions是模型返回的
         suggestions = """
         “咖” 应该是发“kā”的音，但你说成了“啊”，这个可能是因为你的嘴巴没有完全张开，或者舌头的位置不对。
         “啡” 应该是发“fēi”的音，但你发出了“微”的音，可能是因为你没有正确地用上下门齿稍微咬住下嘴唇来发音。
