@@ -1,18 +1,23 @@
 from echo_journey.api.downward_protocol_handler import DownwardProtocolHandler
 from echo_journey.api.proto.downward_pb2 import TutorMessage, WordCorrectMessage
+from echo_journey.api.proto.upward_pb2 import StudentMessage
 from echo_journey.common.utils import parse_pinyin
+from echo_journey.data.data.whole_context import WholeContext
 
 
 class TalkPractiseService:
     def __init__(self, session_id, ws_msg_handler):
         self.session_id = session_id
         self.ws_msg_handler: DownwardProtocolHandler = ws_msg_handler
+        self.main_chat_context = None
         
     async def initialize(self):
+        # self.main_chat_context = WholeContext.build_from_context_dict()
         expected_messages = parse_pinyin("咖啡")  
         await self.ws_msg_handler.send_tutor_message(text="我们一起来练习咖啡这个单词吧", expected_messages=expected_messages)
         
-    async def process_student_message(self, student_message):
+    async def process_student_message(self, student_message: StudentMessage):
+        
         await self.ws_msg_handler.send_tutor_message(text="来，你再读一下")
 
     
