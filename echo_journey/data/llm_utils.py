@@ -35,20 +35,3 @@ def get_llm_names() -> list[str]:
     with open(_get_config_path(), "r") as yaml_file:
         yaml_data: dict = yaml.safe_load(yaml_file)
     return list(yaml_data.keys())
-
-
-def create_default_llm() -> LLM:
-    # This is set to `azure`
-    api_type = "azure"
-    api_key = os.getenv("CUSTOM_OPENAI_KEY")
-    # The base URL for your Azure OpenAI resource. e.g. "https://<your resource name>.openai.azure.com"
-    api_base = os.getenv("CUSTOM_OPENAI_API_BASE")
-    # Currently Chat Completions API have the following versions available: 2023-03-15-preview
-    api_version = os.getenv("CUSTOM_OPENAI_API_VERSION")
-    llm = OpenaiLLM(
-        api_type=api_type,
-        api_key=api_key,
-        api_base=api_base,
-        api_version=api_version,
-    )
-    return llm
