@@ -94,18 +94,23 @@ class TalkPractiseService:
             if scene_info.get("当前场景", None):
                 self.status = ClassStatus.ING
                 self.practise_progress = PractiseProgress(scene_info)
-                student_text = self.practise_progress.get_current_practise()
-            self.main_chat_context.add_user_msg_to_cur({"role": "user", "content": student_text})
+                expected_sentence = self.practise_progress.get_current_practise()
+            self.main_chat_context.add_user_msg_to_cur({"role": "user", "content": expected_sentence})
             teacher_info = await self.main_chat_context.execute()
-            await self.ws_msg_handler.send_tutor_message(text=teacher_info["teacher"])
+            expected_messages = parse_pinyin(expected_sentence)
+            await self.ws_msg_handler.send_tutor_message(text=teacher_info["teacher"], expected_messages=expected_messages)
         elif self.status == ClassStatus.ING:
             self.main_chat_context.add_user_msg_to_cur({"role": "user", "content": student_text})
             teacher_info = await self.main_chat_context.execute()
             if teacher_info.get("skip", False):
                 self.practise_progress.get_next_practise()
-                self.main_chat_context.add_assistant_msg_to_cur({"role": "user", "content": self.practise_progress.get_current_practise()})
+                expected_sentence = self.practise_progress.get_current_practise()
+                self.main_chat_context.add_assistant_msg_to_cur({"role": "user", "content": expected_sentence})
                 teacher_info = await self.main_chat_context.execute()
-            await self.ws_msg_handler.send_tutor_message(text=teacher_info["teacher"])
+                expected_messages = parse_pinyin(expected_sentence)
+                await self.ws_msg_handler.send_tutor_message(text=teacher_info["teacher"], expected_messages=expected_messages)
+            else:
+                await self.ws_msg_handler.send_tutor_message(text=teacher_info["teacher"])
         else:
             raise ValueError(f"Unknown status: {self.status}")
         
@@ -151,9 +156,11 @@ class TalkPractiseService:
                 await self.ws_msg_handler.send_correct_message(suggestions=suggestions, expected_messages=expected_messages, msgs=messages)
             else:
                 self.practise_progress.get_next_practise()
-                if self.practise_progress.get_current_practise():
+                expected_sentence = self.practise_progress.get_current_practise()
+                if expected_sentence:
                     self.main_chat_context.add_assistant_msg_to_cur({"role": "assistant", "content": self.practise_progress.get_current_practise()})
                     teacher_info = await self.main_chat_context.execute()
-                    await self.ws_msg_handler.send_tutor_message(text=teacher_info["teacher"])
+                    expected_messages = parse_pinyin(expected_sentence)
+                    await self.ws_msg_handler.send_tutor_message(text=teacher_info["teacher"], expected_messages=expected_messages)
         else:
             raise ValueError(f"Unknown status: {self.status}")
