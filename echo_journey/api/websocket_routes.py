@@ -37,6 +37,7 @@ async def websocket_talk_practise(
     ws_msg_handler = DownwardProtocolHandler(websocket, manager)
     talk_practise_service = TalkPractiseService(session_id, ws_msg_handler)
     await talk_practise_service.initialize()
+        
     try:
         while True:
             received_data_bytes = await websocket.receive_bytes()
