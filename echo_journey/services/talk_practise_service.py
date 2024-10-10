@@ -53,7 +53,7 @@ class TalkPractiseService:
         self.ws_msg_handler: DownwardProtocolHandler = ws_msg_handler
         self.main_chat_context = None
         self.scene_generator = None
-        self.correct_assistant = None
+        self.correct_context = None
         self.status = ClassStatus.NOTSTART
         self.asr: Kanyun = Kanyun.get_instance()
         self.practise_progress = None
@@ -61,7 +61,7 @@ class TalkPractiseService:
     async def initialize(self):
         self.main_chat_context = self.generate_context_by_yaml("echo_journey/services/meta/talk_practise.yaml", "talk_assistant")
         self.scene_generator = self.generate_context_by_yaml("echo_journey/services/meta/scene_generation.yaml", "scene_assistant")
-        self.correct_assistant = self.generate_context_by_yaml("echo_journey/services/meta/correct.yaml", "correct_assistant")
+        self.correct_context = self.generate_context_by_yaml("echo_journey/services/meta/correct.yaml", "correct_context")
         treating_message = "那你今天有什么想聊的话题呢？可以跟我说说，如果没什么的想法的话我就给你推荐几个日常的"
         self.main_chat_context.add_assistant_msg_to_cur({"role": "assistant", "content": treating_message})
         await self.ws_msg_handler.send_tutor_message(text=treating_message)
@@ -95,7 +95,7 @@ class TalkPractiseService:
         else:
             raise ValueError(f"Unknown status: {self.status}")
         
-    def format_correct_assistant_input(self, expected_messages, messages):
+    def format_correct_context_input(self, expected_messages, messages):
         format_dict = {}
         expected_sentence = ""
         for expected_message in expected_messages:
@@ -116,22 +116,22 @@ class TalkPractiseService:
 
     async def process_audio_message(self, audio_message: AudioMessage, platform):
         if self.status == ClassStatus.SCENE_GEN:
+            pass
+        elif self.status == ClassStatus.ING:
             expected_messages = parse_pinyin(audio_message.expected_sentence)  
             asr_result = self.asr.transcribe(audio_message.audio_data, platform)
             messages = parse_pinyin(asr_result)
-            format_dict = self.format_correct_assistant_input(expected_messages, messages)
-            user_msg = self.correct_assistant.content.get("user_prompt_prefix", "").format(**format_dict)
-            self.correct_assistant.add_user_msg_to_cur({"role": "user", "content": user_msg})
-            result = await self.correct_assistant.execute()
-            suggestions = result["suggestion_list"]
+            format_dict = self.format_correct_context_input(expected_messages, messages)
+            user_msg = self.correct_context.cur_visible_assistant.content.user_prompt_prefix.format(**format_dict)
+            self.correct_context.add_user_msg_to_cur({"role": "user", "content": user_msg})
+            result = await self.correct_context.execute()
+            suggestion_list = result["suggestion_list"]
             suggestions = ""
-            for suggestion in suggestions:
+            for suggestion in suggestion_list:
                 if not suggestion or suggestion == "null":
                     continue
                 else:
                     suggestions += suggestion
             await self.ws_msg_handler.send_correct_message(suggestions=suggestions, expected_messages=expected_messages, msgs=messages)
-        elif self.status == ClassStatus.ING:
-            pass
         else:
             raise ValueError(f"Unknown status: {self.status}")

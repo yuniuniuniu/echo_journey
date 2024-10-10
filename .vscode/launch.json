@@ -23,7 +23,7 @@
             ],
             "console": "integratedTerminal",
             "justMyCode": false,
-            "cwd": "/home/trader/echo_journey"
+            "cwd": "/root/echo_journey"
         },
     ]
 }

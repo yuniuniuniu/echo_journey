@@ -1,7 +1,7 @@
 from fastapi.testclient import TestClient
 
 import sys
-sys.path.append("/home/trader/echo_journey")
+sys.path.append("/root/echo_journey")
 from echo_journey.api.proto.downward_message_wrapper import (
     unwrap_downward_message_from_bytes,
 )
@@ -11,7 +11,16 @@ from echo_journey.api.proto.upward_message_wrapper import wrap_upward_message
 
 from echo_journey.api.proto.upward_pb2 import AudioMessage, StudentMessage
 from echo_journey.main import app
+from pydub import AudioSegment
+import io
+import speech_recognition as sr
 
+def convert_wav_file_to_pcm_bytes(audio_file_path):
+    wav_audio = AudioSegment.from_file(audio_file_path, format="wav")
+    webm_io = io.BytesIO()
+    wav_audio.export(webm_io, format="webm")
+    webm_data = webm_io.getvalue()
+    return webm_data
 
 def test_websocket():
     client = TestClient(app)  # app is fastapi instance
@@ -24,7 +33,7 @@ def test_websocket():
         assert isinstance(downward_message, TutorMessage)
 
         student_text_message = StudentMessage()  # send student message
-        student_text_message.text = "咖啡"
+        student_text_message.text = "去喝咖啡"
         websocket.send_bytes(
             wrap_upward_message(student_text_message).SerializeToString()
         )
@@ -35,7 +44,8 @@ def test_websocket():
         
         
         audio_message = AudioMessage()
-        audio_message.expected_sentence = "我不知道啊"
+        audio_message.expected_sentence = "啊微"
+        audio_message.audio_data = convert_wav_file_to_pcm_bytes("tests/data/test.wav")
         websocket.send_bytes(
             wrap_upward_message(audio_message).SerializeToString()
         )
