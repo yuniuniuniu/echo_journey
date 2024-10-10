@@ -169,14 +169,9 @@ class WholeContext():
     async def _async_commit_to_llm(
         self, assistant_meta: AssistantMeta, messages: list[dict]
     ):
-        functions = AssistantMeta.chat_functions(assistant_meta.assistant_name)
-        temperature = AssistantMeta.temperature_of(assistant_meta.assistant_name)
         async for delta, is_restart_commit in self.llm.acommit(
             messages,
-            functions,
-            temperature,
             json_mode=assistant_meta.content.json_mode,
-            short_system_mode=assistant_meta.content.short_system_mode,
         ):
             yield delta, is_restart_commit
 
@@ -225,7 +220,6 @@ class WholeContext():
             {
                 "role": "assistant",
                 "content": merged_response["content"],
-                "stat": merged_response["stat"],
                 "assistant_id": self.cur_visible_assistant.get_id(),
             }
         )
