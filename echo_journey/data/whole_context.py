@@ -48,12 +48,10 @@ class WholeContext():
             ]
         user_msg_dict["assistant_id"] = self.cur_visible_assistant.get_id()
         self.cur_chat_history.append(user_msg_dict)
-        self.original_messages.append(user_msg_dict)
 
     def add_assistant_msg_to_cur(self, assistant_msg_dict: dict):
         assistant_msg_dict["timestamp"] = round(time.time(), 3)
         self.cur_chat_history.append(assistant_msg_dict)
-        self.original_messages.append(assistant_msg_dict)
 
     def get_last_msg_of(self, role):
         if not self.cur_chat_history:
@@ -78,13 +76,6 @@ class WholeContext():
             last_index = len(self.cur_chat_history)
         chat_history_with_prefix_msgs = (
             prefix_messages_in_list + self.cur_chat_history[-last_index:]
-        )
-        return chat_history_with_prefix_msgs
-
-    def original_msgs_view(self):
-        chat_history_with_prefix_msgs = (
-            self.cur_visible_assistant.content.prefix_messages_in_list
-            + self.original_messages
         )
         return chat_history_with_prefix_msgs
 
@@ -137,11 +128,9 @@ class WholeContext():
 
     def clear(self):
         self.cur_chat_history.clear()
-        self.original_messages.clear()
 
     def recover_history_from(self, messages):
         self.cur_chat_history = copy.deepcopy(messages)
-        self.original_messages = copy.deepcopy(messages)
 
     @classmethod
     def build_from(
@@ -164,6 +153,11 @@ class WholeContext():
             yaml.safe_load(self.cur_visible_assistant.content.prefix_messages)
         except Exception as e:
             raise yaml.YAMLError("prefix_messages parse error")
+    
+    async def execute(self):
+        async for bot_res, _ in self.submit():
+            pass
+        return json.loads(bot_res[-1]["content"])
 
     async def submit(self):
         self._validate_predix_messages()
@@ -171,7 +165,7 @@ class WholeContext():
         async for bot_res, delta in self.bot_async(submittable_msgs):
             yield bot_res, delta
         self.postprocess_after_submit()
-
+        
     async def _async_commit_to_llm(
         self, assistant_meta: AssistantMeta, messages: list[dict]
     ):
@@ -272,9 +266,6 @@ class WholeContext():
             {"content": ""},
             is_assistant_request_completed=True,
         )
-
-    def get_visible_msgs(self, new_msgs):
-        return self.get_original_messages() + new_msgs
 
     def get_id(self):
         return self.cur_visible_assistant.get_id()
