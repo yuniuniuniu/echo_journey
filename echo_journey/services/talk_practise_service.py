@@ -13,23 +13,40 @@ class ClassStatus(Enum):
     SCENE_GEN = 2
     ING = 3
  
+class PractiseStatus(Enum):
+    NOTSTART = 1
+    WORD = 2
+    SENTENCE = 3
+
 class PractiseProgress:
-    # 需要修改生成next的逻辑
     def __init__(self, content: dict):
         self.current_sentence_round = 0
         self.current_word_round = 0
         self.scene = content.get("当前场景", None)
         self.sentences_list = [content.get("短句1", []), content.get("短句2", []), content.get("短句3", [])]
         if self.scene:
+            self.current_status = PractiseStatus.WORD
             self.current_practise = self.sentences_list[self.current_sentence_round][self.current_word_round]
+        else:
+            self.current_status = PractiseStatus.NOTSTART
+            self.current_practise = None
             
     def get_next_practise(self):
-        if self.current_word_round < len(self.sentences_list[self.current_sentence_round]) - 1:
-            self.current_word_round += 1
-        else:
+        if self.current_status == PractiseStatus.SENTENCE:
             self.current_sentence_round += 1
             self.current_word_round = 0
-        self.current_practise = self.sentences_list[self.current_sentence_round][self.current_word_round]
+        elif self.current_status == PractiseStatus.WORD:
+            if self.current_word_round < len(self.sentences_list[self.current_sentence_round]) - 1:
+                self.current_word_round += 1
+            else:
+                self.current_status = PractiseStatus.SENTENCE
+                self.current_practise = ",".join(self.sentences_list[self.current_sentence_round])
+                return self.current_practise
+
+        if not self.is_end():
+            self.current_practise = self.sentences_list[self.current_sentence_round][self.current_word_round]
+        else:
+            self.current_practise = None
         return self.current_practise
     
     def get_current_practise(self):
@@ -40,9 +57,6 @@ class PractiseProgress:
     
     def get_cur_practise_sentence(self):
         return self.sentences_list[self.current_sentence]
-    
-    def is_end_of_sentence(self):
-        return self.current_word_round >= len(self.sentences_list[self.current_sentence_round])
             
     def is_end(self):
         return self.current_sentence_round >= len(self.sentences_list)
@@ -132,6 +146,14 @@ class TalkPractiseService:
                     continue
                 else:
                     suggestions += suggestion
-            await self.ws_msg_handler.send_correct_message(suggestions=suggestions, expected_messages=expected_messages, msgs=messages)
+            score = int(result["score"])
+            if score <= 80:
+                await self.ws_msg_handler.send_correct_message(suggestions=suggestions, expected_messages=expected_messages, msgs=messages)
+            else:
+                self.practise_progress.get_next_practise()
+                if self.practise_progress.get_current_practise():
+                    self.main_chat_context.add_assistant_msg_to_cur({"role": "assistant", "content": self.practise_progress.get_current_practise()})
+                    teacher_info = await self.main_chat_context.execute()
+                    await self.ws_msg_handler.send_tutor_message(text=teacher_info["teacher"])
         else:
             raise ValueError(f"Unknown status: {self.status}")
