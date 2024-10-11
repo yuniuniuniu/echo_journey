@@ -128,7 +128,21 @@ def timed(func):
 
         return sync_wrapper
 
-from pypinyin import lazy_pinyin, Style
+from pypinyin import lazy_pinyin, Style, pinyin
+
+
+def chinese_to_pinyin(text, style=Style.TONE, delimiter=' '):
+    """
+    将中文转换为拼音。
+    
+    :param text: 要转换的中文字符串
+    :param style: 拼音的样式，默认是带声调的拼音
+    :param delimiter: 拼音之间的分隔符，默认用空格分隔
+    :return: 转换后的拼音字符串
+    """
+    pinyin_list = pinyin(text, style=style)
+    pinyin_str = delimiter.join([''.join(item) for item in pinyin_list])
+    return pinyin_str
 
 def parse_pinyin(text):
     result = []
@@ -153,5 +167,5 @@ def parse_pinyin(text):
             yunmu = yunmu[:-1]
         else:
             tone = '5'
-        result.append(WordCorrectMessage(word=char, initial_consonant=shengmu, vowels=yunmu, tone=int(tone)))
+        result.append(WordCorrectMessage(word=char, initial_consonant=shengmu, vowels=yunmu, tone=int(tone), pinyin=chinese_to_pinyin(char)))
     return result

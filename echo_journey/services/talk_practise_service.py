@@ -195,11 +195,15 @@ class TalkPractiseService:
             result = await self.correct_context.execute()
             suggestion_list = result["suggestion_list"]
             suggestions = ""
-            for suggestion in suggestion_list:
-                if not suggestion or suggestion == "null":
-                    continue
-                else:
-                    suggestions += suggestion
+            try:
+                for suggestion in suggestion_list:
+                    if not suggestion or suggestion == "null":
+                        continue
+                    else:
+                        suggestions += suggestion
+            except Exception as e:
+                logger.exception(f"parse suggestion error: {e} with suggestion_list: {suggestion_list}")
+                suggestions = "对不起，我没有听清楚，请再说一遍"
             score = int(result["score"])
             if score <= 80:
                 await self.ws_msg_handler.send_correct_message(suggestions=suggestions, expected_messages=expected_messages, msgs=messages)
