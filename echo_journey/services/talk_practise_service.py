@@ -52,9 +52,6 @@ class PractiseProgress:
     def get_current_practise(self):
         return self.current_practise
     
-    def get_current_practise_sentence(self):
-        return self.sentences_list[self.current_sentence_round]
-    
     def get_history_student_practise(self):
         result = []
         sentences =  self.sentences_list[:self.current_sentence_round]
@@ -67,7 +64,7 @@ class PractiseProgress:
         return self.sentences_list[self.current_sentence_round][self.current_word_round]
     
     def get_cur_practise_sentence(self):
-        return self.sentences_list[self.current_sentence_round]
+        return ",".join(self.sentences_list[self.current_sentence_round])
             
     def is_end(self):
         return self.current_sentence_round >= len(self.sentences_list)
@@ -179,7 +176,7 @@ class TalkPractiseService:
             asr_result = self.asr.transcribe(audio_message.audio_data, platform)
             await self.process_message_at_scene_gen(asr_result) 
         elif self.status == ClassStatus.ING:
-            expected_messages = parse_pinyin(audio_message.expected_sentence)  
+            expected_messages = parse_pinyin(self.practise_progress.get_cur_practise_sentence())  
             asr_result = self.asr.transcribe(audio_message.audio_data, platform)
             messages = parse_pinyin(asr_result)
             format_dict = self.format_correct_context_input(expected_messages, messages)
