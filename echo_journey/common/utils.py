@@ -121,7 +121,8 @@ from pypinyin import lazy_pinyin, Style
 
 def parse_pinyin(text):
     result = []
-
+    text = text.replace(",", "").replace("，", "")
+    
     pinyin_list = lazy_pinyin(text, style=Style.TONE3, neutral_tone_with_five=True)
     shengmu_list = lazy_pinyin(text, style=Style.INITIALS)
     yunmu_list_with_tone = lazy_pinyin(text, style=Style.FINALS_TONE3, neutral_tone_with_five=True)
