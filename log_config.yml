@@ -1,0 +1,33 @@
+version: 1
+disable_existing_loggers: False
+
+formatters:
+  detailed:
+    format: '%(asctime)s - %(funcName)s - %(filename)s - %(levelname)s - %(message)s - %(session_id)s'
+    datefmt: '%Y-%m-%d %H:%M:%S'
+
+filters:
+  session_filter:
+    (): echo_journey.common.utils.SessionFilter
+
+handlers:
+  console:
+    class: logging.StreamHandler
+    level: DEBUG
+    formatter: detailed
+    stream: ext://sys.stdout
+    filters: [session_filter]
+
+  timed_rotating_file_handler:
+    class: logging.handlers.TimedRotatingFileHandler
+    level: INFO
+    formatter: detailed
+    filename: ./classroom.log
+    when: D
+    interval: 1
+    backupCount: 7
+    filters: [session_filter]
+
+root:
+  level:  INFO
+  handlers: [console, timed_rotating_file_handler]

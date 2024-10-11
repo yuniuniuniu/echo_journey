@@ -4,11 +4,16 @@ import warnings
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+import yaml
 from echo_journey.api.restful_routes import router as restful_router
 from echo_journey.api.websocket_routes import router as websocket_router
 from echo_journey.common.utils import ConnectionManager
 
 app = FastAPI()
+
+with open("log_config.yml", "r") as f:
+    config = yaml.safe_load(f)
+    logging.config.dictConfig(config)
 
 app.add_middleware(
     CORSMiddleware,

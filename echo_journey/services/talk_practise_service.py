@@ -1,3 +1,4 @@
+import logging
 import yaml
 from echo_journey.api.downward_protocol_handler import DownwardProtocolHandler
 from echo_journey.api.proto.upward_pb2 import AudioMessage, StudentMessage
@@ -7,6 +8,8 @@ from echo_journey.data.assistant_content import AssistantContent
 from echo_journey.data.assistant_meta import AssistantMeta
 from echo_journey.data.whole_context import WholeContext
 from enum import Enum
+
+logger = logging.getLogger(__name__)
 
 class ClassStatus(Enum):
     NOTSTART = 1
@@ -23,7 +26,9 @@ class PractiseProgress:
         self.current_sentence_round = 0
         self.current_word_round = 0
         self.scene = content.get("当前场景", None)
+        logger.info(f"current scene: {self.scene}")
         self.sentences_list = [content.get("短句1", []), content.get("短句2", []), content.get("短句3", [])]
+        logger.info(f"sentences list: {self.sentences_list}")
         if self.scene:
             self.current_status = PractiseStatus.WORD
             self.current_practise = self.sentences_list[self.current_sentence_round][self.current_word_round]
@@ -84,7 +89,7 @@ class TalkPractiseService:
         self.main_chat_context = self.generate_context_by_yaml("echo_journey/services/meta/talk_practise.yaml", "talk_assistant")
         self.scene_generator = self.generate_context_by_yaml("echo_journey/services/meta/scene_generation.yaml", "scene_assistant")
         self.correct_context = self.generate_context_by_yaml("echo_journey/services/meta/correct.yaml", "correct_context")
-        treating_message = "那你今天有什么想聊的话题呢？可以跟我说说，如果没什么的想法的话我就给你推荐几个日常的"
+        treating_message = "那你今天有什么想聊的话题呢？可以跟我说说，如果没什么的想法的话我就给你推荐几个日常的呀"
         self.main_chat_context.add_assistant_msg_to_cur({"role": "assistant", "content": treating_message})
         await self.ws_msg_handler.send_tutor_message(text=treating_message)
         self.status = ClassStatus.SCENE_GEN
@@ -95,7 +100,7 @@ class TalkPractiseService:
         return WholeContext.build_from(assistant_meta=assistant)
     
     async def process_message_at_scene_gen(self, student_text):
-        self.scene_generator.add_user_msg_to_cur({"role": "user", "content": student_text})
+        self.scene_generator.add_user_msg_to_cur({"role": "user", "content": self.scene_generator.cur_visible_assistant.content.user_prompt_prefix + student_text})
         scene_info = await self.scene_generator.execute()
         if scene_info.get("当前场景", None):
             self.status = ClassStatus.ING
@@ -114,7 +119,7 @@ class TalkPractiseService:
             await self.ws_msg_handler.send_tutor_message(text=teacher_info["teacher"], expected_messages=expected_messages)
         else:
             user_msg = "学生当前说话内容未包含场景，让他说个练习的场景"
-            self.main_chat_context.add_assistant_msg_to_cur({"role": "assistant", "content": user_msg})
+            self.main_chat_context.add_user_msg_to_cur({"role": "user", "content": user_msg})
             teacher_info = await self.main_chat_context.execute()
             await self.ws_msg_handler.send_tutor_message(text=teacher_info["teacher"])
             
@@ -143,7 +148,7 @@ class TalkPractiseService:
                 format_dict["STUDENT_STATUS"] = f"学生跳过练习{skip_practise},现在开始练习{expected_practise}"
                 format_dict["STUDENT"] = "无"
                 user_msg = self.main_chat_context.cur_visible_assistant.content.user_prompt_prefix.format(**format_dict)
-                self.main_chat_context.add_assistant_msg_to_cur({"role": "user", "content": user_msg})
+                self.main_chat_context.add_user_msg_to_cur({"role": "user", "content": user_msg})
                 teacher_info = await self.main_chat_context.execute()
                 expected_messages = parse_pinyin(expected_practise)
                 await self.ws_msg_handler.send_tutor_message(text=teacher_info["teacher"], expected_messages=expected_messages)
@@ -176,9 +181,14 @@ class TalkPractiseService:
             asr_result = self.asr.transcribe(audio_message.audio_data, platform)
             await self.process_message_at_scene_gen(asr_result) 
         elif self.status == ClassStatus.ING:
-            expected_messages = parse_pinyin(self.practise_progress.get_cur_practise_sentence())  
+            expected_messages = parse_pinyin(self.practise_progress.get_current_practise())  
             asr_result = self.asr.transcribe(audio_message.audio_data, platform)
-            messages = parse_pinyin(asr_result)
+            try:
+                messages = parse_pinyin(asr_result)
+            except Exception as e:
+                logger.exception(f"parse pinyin error: {e} with asr_result: {asr_result}")
+                await self.ws_msg_handler.send_tutor_message(text="对不起，我没有听清楚，请再说一遍")
+                return
             format_dict = self.format_correct_context_input(expected_messages, messages)
             user_msg = self.correct_context.cur_visible_assistant.content.user_prompt_prefix.format(**format_dict)
             self.correct_context.add_user_msg_to_cur({"role": "user", "content": user_msg})
@@ -207,12 +217,12 @@ class TalkPractiseService:
                     format_dict["STUDENT_STATUS"] = f"学生通过练习{passed_practise},现在开始练习{expected_practise}"
                     format_dict["STUDENT"] = "无"
                     user_msg = self.main_chat_context.cur_visible_assistant.content.user_prompt_prefix.format(**format_dict)
-                    self.main_chat_context.add_assistant_msg_to_cur({"role": "assistant", "content": user_msg})
+                    self.main_chat_context.add_user_msg_to_cur({"role": "user", "content": user_msg})
                     teacher_info = await self.main_chat_context.execute()
                     expected_messages = parse_pinyin(expected_practise)
                     await self.ws_msg_handler.send_tutor_message(text=teacher_info["teacher"], expected_messages=expected_messages)
                 else:
-                    self.main_chat_context.add_assistant_msg_to_cur({"role": "assistant", "content": "这个场景的练习结束"})
+                    self.main_chat_context.add_user_msg_to_cur({"role": "user", "content": "这个场景的练习结束"})
                     teacher_info = await self.main_chat_context.execute()
                     expected_messages = parse_pinyin(expected_practise)
                     await self.ws_msg_handler.send_tutor_message(text=teacher_info["teacher"])

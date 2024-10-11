@@ -7,7 +7,7 @@ class AssistantContent:
         self.prefix_messages = content.get("prefix_messages", "[]")
         self.commit_last_n_rounds = content.get("commit_last_n_rounds", False)
         self.keep_round_nums = content.get("keep_round_nums", 0)
-        self.json_mode = content.get("json_mode", False)
+        self.json_mode = content.get("json_mode", True)
 
     def is_empty(self):
         return (

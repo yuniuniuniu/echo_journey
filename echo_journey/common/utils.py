@@ -7,6 +7,17 @@ from starlette.websockets import WebSocket, WebSocketState
 
 from echo_journey.api.proto.downward_pb2 import WordCorrectMessage
 
+import logging
+
+import contextvars
+
+session_id_var = contextvars.ContextVar("session_id", default="N/A")
+
+class SessionFilter(logging.Filter):
+    def filter(self, record):
+        record.session_id = session_id_var.get()
+        return True
+
 
 class Singleton:
     _instances = {}
@@ -121,7 +132,7 @@ from pypinyin import lazy_pinyin, Style
 
 def parse_pinyin(text):
     result = []
-    text = text.replace(",", "").replace("，", "")
+    text = text.replace(",", "").replace("，", "").replace("。", "").replace("？", "").replace("！", "").replace("；", "").replace("：", "").replace("、", "").replace(" ", "").replace("\n", "").replace("\t", "").replace("\r", "").replace("“", "").replace("”", "").replace("‘", "").replace("’", "").replace("（", "").replace("）", "").replace("《", "").replace("》", "").replace("【", "").replace("】", "").replace("—", "").replace("…", "").replace("·", "").replace("「", "").replace("」", "").replace("『", "").replace("』", "").replace("〈", "").replace("〉", "")
     
     pinyin_list = lazy_pinyin(text, style=Style.TONE3, neutral_tone_with_five=True)
     shengmu_list = lazy_pinyin(text, style=Style.INITIALS)

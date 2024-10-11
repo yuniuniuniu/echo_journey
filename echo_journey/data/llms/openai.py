@@ -35,7 +35,7 @@ class OpenaiLLM(LLM):
         messages: list[dict],
         functions: list[dict] = None,
         temperature=0,
-        json_mode=False,
+        json_mode=True,
         **kwargs,
     ):
         retry_count = 0
@@ -76,7 +76,7 @@ class OpenaiLLM(LLM):
         messages: list[dict],
         functions: list[dict] = None,
         temperature=0,
-        json_mode=False,
+        json_mode=True,
         **kwargs,
     ):
 
