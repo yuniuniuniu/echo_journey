@@ -1,3 +1,4 @@
+import logging
 from fastapi import APIRouter, Path, WebSocket, WebSocketDisconnect, Query
 
 from echo_journey.api.downward_protocol_handler import DownwardProtocolHandler
@@ -5,6 +6,8 @@ from echo_journey.api.proto.upward_message_wrapper import unwrap_upward_message_
 from echo_journey.api.proto.upward_pb2 import AudioMessage, StudentMessage
 from echo_journey.common.utils import get_connection_manager
 from echo_journey.services.talk_practise_service import TalkPractiseService
+from echo_journey.common.utils import session_id_var
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 manager = get_connection_manager()
@@ -33,6 +36,7 @@ async def websocket_talk_practise(
     session_id: str = Path(...),
     platform: str = Query(default="web"),
 ):
+    session_id_var.set(session_id)
     await manager.connect(websocket)
     ws_msg_handler = DownwardProtocolHandler(websocket, manager)
     talk_practise_service = TalkPractiseService(session_id, ws_msg_handler)
@@ -51,4 +55,5 @@ async def websocket_talk_practise(
     except WebSocketDisconnect:
         await manager.disconnect(websocket)
     except Exception as e:
+        logger.exception(f"Caught exception: {e}")
         await manager.disconnect(websocket)
