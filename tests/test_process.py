@@ -53,3 +53,7 @@ def test_websocket():
         response_data_bytes = websocket.receive_bytes()
         downward_message = unwrap_downward_message_from_bytes(response_data_bytes)
         assert isinstance(downward_message, SentenceCorrectMessage)
+
+        response_data_bytes = websocket.receive_bytes()
+        downward_message = unwrap_downward_message_from_bytes(response_data_bytes)
+        assert isinstance(downward_message, TutorMessage)

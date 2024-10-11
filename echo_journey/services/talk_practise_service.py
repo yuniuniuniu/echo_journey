@@ -52,11 +52,22 @@ class PractiseProgress:
     def get_current_practise(self):
         return self.current_practise
     
+    def get_current_practise_sentence(self):
+        return self.sentences_list[self.current_sentence_round]
+    
+    def get_history_student_practise(self):
+        result = []
+        sentences =  self.sentences_list[:self.current_sentence_round]
+        for sentence in sentences:
+            result.extend(sentence)
+        result.extend(self.sentences_list[self.current_sentence_round][:self.current_word_round])
+        return ",".join(result)
+    
     def get_cur_practise_word(self):
         return self.sentences_list[self.current_sentence_round][self.current_word_round]
     
     def get_cur_practise_sentence(self):
-        return self.sentences_list[self.current_sentence]
+        return self.sentences_list[self.current_sentence_round]
             
     def is_end(self):
         return self.current_sentence_round >= len(self.sentences_list)
@@ -86,28 +97,58 @@ class TalkPractiseService:
         assistant = AssistantMeta(assistant_name=name, content=AssistantContent(content=content))
         return WholeContext.build_from(assistant_meta=assistant)
     
+    async def process_message_at_scene_gen(self, student_text):
+        self.scene_generator.add_user_msg_to_cur({"role": "user", "content": student_text})
+        scene_info = await self.scene_generator.execute()
+        if scene_info.get("当前场景", None):
+            self.status = ClassStatus.ING
+            self.practise_progress = PractiseProgress(scene_info)
+            expected_practise = self.practise_progress.get_current_practise()
+            format_dict = {}
+            format_dict["PLAN"] = self.practise_progress.get_cur_practise_sentence()
+            format_dict["HISTORY_PRACTISE"] = self.practise_progress.get_history_student_practise()
+            format_dict["CURRENT_PRACTISE"] = self.practise_progress.get_current_practise()
+            format_dict["STUDENT_STATUS"] = "刚开始练习"
+            format_dict["STUDENT"] = "无"
+            user_msg = self.main_chat_context.cur_visible_assistant.content.user_prompt_prefix.format(**format_dict)
+            self.main_chat_context.add_user_msg_to_cur({"role": "user", "content": user_msg})
+            teacher_info = await self.main_chat_context.execute()
+            expected_messages = parse_pinyin(expected_practise)
+            await self.ws_msg_handler.send_tutor_message(text=teacher_info["teacher"], expected_messages=expected_messages)
+        else:
+            user_msg = "学生当前说话内容未包含场景，让他说个练习的场景"
+            self.main_chat_context.add_assistant_msg_to_cur({"role": "assistant", "content": user_msg})
+            teacher_info = await self.main_chat_context.execute()
+            await self.ws_msg_handler.send_tutor_message(text=teacher_info["teacher"])
+            
     async def process_student_message(self, student_message: StudentMessage):
         student_text = student_message.text
         if self.status == ClassStatus.SCENE_GEN:
-            self.scene_generator.add_user_msg_to_cur({"role": "user", "content": student_text})
-            scene_info = await self.scene_generator.execute()
-            if scene_info.get("当前场景", None):
-                self.status = ClassStatus.ING
-                self.practise_progress = PractiseProgress(scene_info)
-                expected_sentence = self.practise_progress.get_current_practise()
-            self.main_chat_context.add_user_msg_to_cur({"role": "user", "content": expected_sentence})
-            teacher_info = await self.main_chat_context.execute()
-            expected_messages = parse_pinyin(expected_sentence)
-            await self.ws_msg_handler.send_tutor_message(text=teacher_info["teacher"], expected_messages=expected_messages)
+            await self.process_message_at_scene_gen(student_text)
         elif self.status == ClassStatus.ING:
-            self.main_chat_context.add_user_msg_to_cur({"role": "user", "content": student_text})
+            format_dict = {}
+            format_dict["PLAN"] = self.practise_progress.get_cur_practise_sentence()
+            format_dict["HISTORY_PRACTISE"] = self.practise_progress.get_history_student_practise()
+            format_dict["CURRENT_PRACTISE"] = self.practise_progress.get_current_practise()
+            format_dict["STUDENT_STATUS"] = "练习中"
+            format_dict["STUDENT"] = student_text
+            user_msg = self.main_chat_context.cur_visible_assistant.content.user_prompt_prefix.format(**format_dict)
+            self.main_chat_context.add_user_msg_to_cur({"role": "user", "content": user_msg})
             teacher_info = await self.main_chat_context.execute()
             if teacher_info.get("skip", False):
+                skip_practise = self.practise_progress.get_current_practise()
                 self.practise_progress.get_next_practise()
-                expected_sentence = self.practise_progress.get_current_practise()
-                self.main_chat_context.add_assistant_msg_to_cur({"role": "user", "content": expected_sentence})
+                expected_practise = self.practise_progress.get_current_practise()
+                format_dict = {}
+                format_dict["PLAN"] = self.practise_progress.get_cur_practise_sentence()
+                format_dict["HISTORY_PRACTISE"] = self.practise_progress.get_history_student_practise()
+                format_dict["CURRENT_PRACTISE"] = self.practise_progress.get_current_practise()
+                format_dict["STUDENT_STATUS"] = f"学生跳过练习{skip_practise},现在开始练习{expected_practise}"
+                format_dict["STUDENT"] = "无"
+                user_msg = self.main_chat_context.cur_visible_assistant.content.user_prompt_prefix.format(**format_dict)
+                self.main_chat_context.add_assistant_msg_to_cur({"role": "user", "content": user_msg})
                 teacher_info = await self.main_chat_context.execute()
-                expected_messages = parse_pinyin(expected_sentence)
+                expected_messages = parse_pinyin(expected_practise)
                 await self.ws_msg_handler.send_tutor_message(text=teacher_info["teacher"], expected_messages=expected_messages)
             else:
                 await self.ws_msg_handler.send_tutor_message(text=teacher_info["teacher"])
@@ -135,7 +176,8 @@ class TalkPractiseService:
 
     async def process_audio_message(self, audio_message: AudioMessage, platform):
         if self.status == ClassStatus.SCENE_GEN:
-            pass
+            asr_result = self.asr.transcribe(audio_message.audio_data, platform)
+            await self.process_message_at_scene_gen(asr_result) 
         elif self.status == ClassStatus.ING:
             expected_messages = parse_pinyin(audio_message.expected_sentence)  
             asr_result = self.asr.transcribe(audio_message.audio_data, platform)
@@ -154,13 +196,28 @@ class TalkPractiseService:
             score = int(result["score"])
             if score <= 80:
                 await self.ws_msg_handler.send_correct_message(suggestions=suggestions, expected_messages=expected_messages, msgs=messages)
+                await self.ws_msg_handler.send_tutor_message(text="来，我们再试一次")
             else:
+                passed_practise = self.practise_progress.get_current_practise()
                 self.practise_progress.get_next_practise()
-                expected_sentence = self.practise_progress.get_current_practise()
-                if expected_sentence:
-                    self.main_chat_context.add_assistant_msg_to_cur({"role": "assistant", "content": self.practise_progress.get_current_practise()})
+                expected_practise = self.practise_progress.get_current_practise()
+                format_dict = {}
+
+                if expected_practise:
+                    format_dict["PLAN"] = self.practise_progress.get_cur_practise_sentence()
+                    format_dict["HISTORY_PRACTISE"] = self.practise_progress.get_history_student_practise()
+                    format_dict["CURRENT_PRACTISE"] = self.practise_progress.get_current_practise()
+                    format_dict["STUDENT_STATUS"] = f"学生通过练习{passed_practise},现在开始练习{expected_practise}"
+                    format_dict["STUDENT"] = "无"
+                    user_msg = self.main_chat_context.cur_visible_assistant.content.user_prompt_prefix.format(**format_dict)
+                    self.main_chat_context.add_assistant_msg_to_cur({"role": "assistant", "content": user_msg})
                     teacher_info = await self.main_chat_context.execute()
-                    expected_messages = parse_pinyin(expected_sentence)
+                    expected_messages = parse_pinyin(expected_practise)
                     await self.ws_msg_handler.send_tutor_message(text=teacher_info["teacher"], expected_messages=expected_messages)
+                else:
+                    self.main_chat_context.add_assistant_msg_to_cur({"role": "assistant", "content": "这个场景的练习结束"})
+                    teacher_info = await self.main_chat_context.execute()
+                    expected_messages = parse_pinyin(expected_practise)
+                    await self.ws_msg_handler.send_tutor_message(text=teacher_info["teacher"])
         else:
             raise ValueError(f"Unknown status: {self.status}")
