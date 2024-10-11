@@ -34,16 +34,18 @@ class TutorMessage(_message.Message):
     def __init__(self, text: _Optional[str] = ..., expected_messages: _Optional[_Iterable[_Union[WordCorrectMessage, _Mapping]]] = ...) -> None: ...
 
 class WordCorrectMessage(_message.Message):
-    __slots__ = ("word", "initial_consonant", "vowels", "tone")
+    __slots__ = ("word", "initial_consonant", "vowels", "tone", "pinyin")
     WORD_FIELD_NUMBER: _ClassVar[int]
     INITIAL_CONSONANT_FIELD_NUMBER: _ClassVar[int]
     VOWELS_FIELD_NUMBER: _ClassVar[int]
     TONE_FIELD_NUMBER: _ClassVar[int]
+    PINYIN_FIELD_NUMBER: _ClassVar[int]
     word: str
     initial_consonant: str
     vowels: str
     tone: int
-    def __init__(self, word: _Optional[str] = ..., initial_consonant: _Optional[str] = ..., vowels: _Optional[str] = ..., tone: _Optional[int] = ...) -> None: ...
+    pinyin: str
+    def __init__(self, word: _Optional[str] = ..., initial_consonant: _Optional[str] = ..., vowels: _Optional[str] = ..., tone: _Optional[int] = ..., pinyin: _Optional[str] = ...) -> None: ...
 
 class SentenceCorrectMessage(_message.Message):
     __slots__ = ("expected_messages", "messages", "suggestions")

@@ -24,6 +24,7 @@ message WordCorrectMessage {
     string initial_consonant = 2;
     string vowels = 3;
     int32 tone = 4;
+    string pinyin = 5;
 }
 
 message SentenceCorrectMessage {
