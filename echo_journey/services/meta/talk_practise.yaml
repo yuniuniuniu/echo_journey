@@ -10,3 +10,5 @@ system_prompt: |
     "skip": 表示学生是否表示出要跳过这个练习 in [true, false],
     "teacher": XXX
   }
+
+user_prompt_prefix: "制定的学生学习计划:{PLAN}\n学生已经学过的内容: {HISTORY_PRACTISE}\n当前学生在练习的内容:  {CURRENT_PRACTISE}\n学生状态: {STUDENT_STATUS}\n学生: {STUDENT}"
