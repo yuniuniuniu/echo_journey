@@ -3,6 +3,7 @@ import yaml
 from echo_journey.api.downward_protocol_handler import DownwardProtocolHandler
 from echo_journey.api.proto.upward_pb2 import AudioMessage, StudentMessage
 from echo_journey.audio.speech_to_text.kanyun import Kanyun
+from echo_journey.audio.speech_to_text.azure import Azure
 from echo_journey.common.utils import parse_pinyin
 from echo_journey.data.assistant_content import AssistantContent
 from echo_journey.data.assistant_meta import AssistantMeta
@@ -83,6 +84,7 @@ class TalkPractiseService:
         self.correct_context = None
         self.status = ClassStatus.NOTSTART
         self.asr: Kanyun = Kanyun.get_instance()
+        self.asr_back = Azure.get_instance()
         self.practise_progress = None
         
     async def initialize(self):
@@ -186,9 +188,13 @@ class TalkPractiseService:
             try:
                 messages = parse_pinyin(asr_result)
             except Exception as e:
-                logger.exception(f"parse pinyin error: {e} with asr_result: {asr_result}")
-                await self.ws_msg_handler.send_tutor_message(text="对不起，我没有听清楚，请再说一遍")
-                return
+                asr_result = self.asr_back.transcribe(audio_message.audio_data, platform)
+                try:
+                    messages = parse_pinyin(asr_result)
+                except Exception as e:
+                    logger.exception(f"parse pinyin error: {e} with asr_result: {asr_result}")
+                    await self.ws_msg_handler.send_tutor_message(text="对不起，我没有听清楚，请再说一遍")
+                    return
             format_dict = self.format_correct_context_input(expected_messages, messages)
             user_msg = self.correct_context.cur_visible_assistant.content.user_prompt_prefix.format(**format_dict)
             self.correct_context.add_user_msg_to_cur({"role": "user", "content": user_msg})
@@ -200,7 +206,7 @@ class TalkPractiseService:
                     if not suggestion or suggestion == "null":
                         continue
                     else:
-                        suggestions += suggestion
+                        suggestions += suggestion + "\n"
             except Exception as e:
                 logger.exception(f"parse suggestion error: {e} with suggestion_list: {suggestion_list}")
                 suggestions = "对不起，我没有听清楚，请再说一遍"
