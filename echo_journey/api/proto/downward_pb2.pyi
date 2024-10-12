@@ -26,12 +26,14 @@ class DownwardMessage(_message.Message):
     def __init__(self, type: _Optional[_Union[DownwardMessageType, str]] = ..., payload: _Optional[bytes] = ...) -> None: ...
 
 class TutorMessage(_message.Message):
-    __slots__ = ("text", "expected_messages")
+    __slots__ = ("text", "expected_messages", "audio")
     TEXT_FIELD_NUMBER: _ClassVar[int]
     EXPECTED_MESSAGES_FIELD_NUMBER: _ClassVar[int]
+    AUDIO_FIELD_NUMBER: _ClassVar[int]
     text: str
     expected_messages: _containers.RepeatedCompositeFieldContainer[WordCorrectMessage]
-    def __init__(self, text: _Optional[str] = ..., expected_messages: _Optional[_Iterable[_Union[WordCorrectMessage, _Mapping]]] = ...) -> None: ...
+    audio: bytes
+    def __init__(self, text: _Optional[str] = ..., expected_messages: _Optional[_Iterable[_Union[WordCorrectMessage, _Mapping]]] = ..., audio: _Optional[bytes] = ...) -> None: ...
 
 class WordCorrectMessage(_message.Message):
     __slots__ = ("word", "initial_consonant", "vowels", "tone", "pinyin")

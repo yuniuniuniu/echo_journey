@@ -1,3 +1,4 @@
+from echo_journey.audio.text_to_speech.kanyun_tts import KanyunTTS
 from echo_journey.common.utils import parse_pinyin
 from echo_journey.data.whole_context import WholeContext
 from echo_journey.services.bots.practise_progress import PractiseProgress
@@ -8,6 +9,7 @@ class TalkPractiseBot():
         self.context = WholeContext.generate_context_by_yaml(os.getenv("TalkPractiseBotPath"), "talk_practise_bot")
         self.practise_progress: PractiseProgress = practise_progress
         self.ws_msg_handler = ws_msg_handler
+        self.tts: KanyunTTS = KanyunTTS.get_instance()
         
     async def send_treating_msg(self):
         treating_message = "那你今天有什么想聊的话题呢？可以跟我说说，如果没什么的想法的话我就给你推荐几个日常的呀"
@@ -31,11 +33,12 @@ class TalkPractiseBot():
         teacher_info = await self.context.execute()
         return teacher_info
         
-    async def send_practise_msg(self, student_status, student_text):
+    async def send_practise_msg(self, student_status, student_text, platform):
         teacher_info = await self.generate_practise_reply(student_status, student_text)
         expected_practise = self.practise_progress.get_current_practise()
         expected_messages = parse_pinyin(expected_practise)
-        await self.ws_msg_handler.send_tutor_message(text=teacher_info["teacher"], expected_messages=expected_messages)
+        audio_bytes = await self.tts.generate_audio(expected_practise, platform=platform)
+        await self.ws_msg_handler.send_tutor_message(text=teacher_info["teacher"], expected_messages=expected_messages, audio_bytes=audio_bytes)
         
     async def send_chat_msg(self, user_msg):
         self.context.add_user_msg_to_cur({"role": "user", "content": user_msg})

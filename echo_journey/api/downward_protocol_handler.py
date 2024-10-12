@@ -19,15 +19,18 @@ class DownwardProtocolHandler:
     def build_tutor_message(
         text,
         expected_messages = None,
+        audio_bytes = None,
     ):
         teacher_message = TutorMessage()
         teacher_message.text = text
         if expected_messages:
             teacher_message.expected_messages.extend(expected_messages)
+        if audio_bytes:
+            teacher_message.audio = audio_bytes
         return teacher_message
 
-    async def send_tutor_message(self, text, expected_messages = None):
-        tutor_msg = self.build_tutor_message(text, expected_messages)
+    async def send_tutor_message(self, text, expected_messages = None, audio_bytes = None):
+        tutor_msg = self.build_tutor_message(text, expected_messages, audio_bytes)
         await self.send_websocket_downward_message(
             wrap_downward_message(tutor_msg)
         )

@@ -17,6 +17,7 @@ message DownwardMessage {
 message TutorMessage {
     string text = 1;
     repeated WordCorrectMessage expected_messages = 2;
+    bytes audio = 3;
 }
 
 message WordCorrectMessage {
