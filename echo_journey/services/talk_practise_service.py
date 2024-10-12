@@ -181,10 +181,16 @@ class TalkPractiseService:
     async def process_audio_message(self, audio_message: AudioMessage, platform):
         if self.status == ClassStatus.SCENE_GEN:
             asr_result = self.asr.transcribe(audio_message.audio_data, platform)
+            if not asr_result:
+                await self.ws_msg_handler.send_tutor_message(text="对不起，我没有听清楚，请再说一遍")
+                return
             await self.process_message_at_scene_gen(asr_result) 
         elif self.status == ClassStatus.ING:
             expected_messages = parse_pinyin(self.practise_progress.get_current_practise())  
             asr_result = self.asr.transcribe(audio_message.audio_data, platform)
+            if not asr_result:
+                await self.ws_msg_handler.send_tutor_message(text="对不起，我没有听清楚，请再说一遍")
+                return
             try:
                 messages = parse_pinyin(asr_result)
             except Exception as e:
