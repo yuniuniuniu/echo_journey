@@ -1,10 +1,11 @@
 from echo_journey.common.utils import parse_pinyin
 from echo_journey.data.whole_context import WholeContext
 from echo_journey.services.bots.practise_progress import PractiseProgress
+import os
 
 class TalkPractiseBot():
     def __init__(self, practise_progress, ws_msg_handler):
-        self.context = WholeContext.generate_context_by_yaml("echo_journey/services/bots/meta/talk_practise.yaml", "talk_practise_bot")
+        self.context = WholeContext.generate_context_by_yaml(os.getenv("TalkPractiseBotPath"), "talk_practise_bot")
         self.practise_progress: PractiseProgress = practise_progress
         self.ws_msg_handler = ws_msg_handler
         

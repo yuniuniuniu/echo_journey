@@ -8,6 +8,10 @@ import yaml
 from echo_journey.api.restful_routes import router as restful_router
 from echo_journey.api.websocket_routes import router as websocket_router
 from echo_journey.common.utils import ConnectionManager
+from dotenv import find_dotenv, load_dotenv
+
+_ = load_dotenv(find_dotenv())
+
 
 app = FastAPI()
 
