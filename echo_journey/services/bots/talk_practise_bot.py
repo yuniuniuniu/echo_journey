@@ -42,5 +42,7 @@ class TalkPractiseBot():
         
     async def send_chat_msg(self, user_msg):
         self.context.add_user_msg_to_cur({"role": "user", "content": user_msg})
+        print(user_msg)
         teacher_info = await self.context.execute()
+        print(teacher_info)
         await self.ws_msg_handler.send_tutor_message(text=teacher_info["teacher"])

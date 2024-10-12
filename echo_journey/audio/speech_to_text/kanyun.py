@@ -37,36 +37,40 @@ class Kanyun(SpeechToText, Singleton):
     ) -> str:
         import requests
 
-        if platform == "web":
-            audio = self._convert_webm_to_wav(audio_bytes, False)
-        elif platform == "ios":
-            audio = self._convert_m4a_to_wav(audio_bytes, False)
-        elif platform == "android":
-            audio = self._convert_webm_to_wav(audio_bytes, False)
-        else:
-            raise ValueError(f"Unsupported platform: {platform}")
+        try:
+            if platform == "web":
+                audio = self._convert_webm_to_wav(audio_bytes, False)
+            elif platform == "ios":
+                audio = self._convert_m4a_to_wav(audio_bytes, False)
+            elif platform == "android":
+                audio = self._convert_webm_to_wav(audio_bytes, False)
+            else:
+                raise ValueError(f"Unsupported platform: {platform}")
 
-        wav_data = BytesIO(audio.get_wav_data())
-        wav_data.name = "SpeechRecognition_audio.wav"
+            wav_data = BytesIO(audio.get_wav_data())
+            wav_data.name = "SpeechRecognition_audio.wav"
 
-        response = requests.post(
-            config.url,
-            params={
-                "appKey": config.app_key,
-            },
-            files={
-                "audio": wav_data,
-            },
-        )
+            response = requests.post(
+                config.url,
+                params={
+                    "appKey": config.app_key,
+                },
+                files={
+                    "audio": wav_data,
+                },
+            )
 
-        if response.status_code != 200:
-            err_msg = f"Error occur when Kanyun.transcribing audio, statusCode: {response.status_code}, responseContent: {response.text}"
-            logger.error(err_msg)
+            if response.status_code != 200:
+                err_msg = f"Error occur when Kanyun.transcribing audio, statusCode: {response.status_code}, responseContent: {response.text}"
+                logger.error(err_msg)
+                return None
+
+            json = response.json()
+            print("Kanyun transcript is: ", json)
+            return json["result"]
+        except Exception as e:
+            logger.error(f"Error occur when Kanyun.transcribing audio: {e}")
             return None
-
-        json = response.json()
-        print("Kanyun transcript is: ", json)
-        return json["result"]
 
     def _convert_webm_to_wav(self, webm_data, local=True):
         webm_audio = AudioSegment.from_file(io.BytesIO(webm_data), format="webm")
