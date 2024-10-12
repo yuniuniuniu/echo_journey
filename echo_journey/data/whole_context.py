@@ -19,6 +19,12 @@ class WholeContext():
         self.cur_visible_assistant: AssistantMeta = None
         self.cur_chat_history: list[dict] = []
         self.llm = create_llm("gpt4-ptu-online")
+        
+    @classmethod
+    def generate_context_by_yaml(cls, path, name):
+        content = yaml.safe_load(open(path, "r"))
+        assistant = AssistantMeta(assistant_name=name, content=AssistantContent(content=content))
+        return cls.build_from(assistant_meta=assistant)
 
     def add_user_msg_to_cur(self, user_msg_dict: dict):
         user_msg_dict["timestamp"] = round(time.time(), 3)
