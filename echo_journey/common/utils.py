@@ -169,3 +169,11 @@ def parse_pinyin(text):
             tone = '5'
         result.append(WordCorrectMessage(word=char, initial_consonant=shengmu, vowels=yunmu, tone=int(tone), pinyin=chinese_to_pinyin(char)))
     return result
+
+
+import uuid
+
+def generate_uuid_from_string(input_string: str) -> uuid.UUID:
+    # 使用一个固定的命名空间 (dns, url, oid, or x500) 或自定义
+    namespace = uuid.NAMESPACE_DNS
+    return str(uuid.uuid5(namespace, input_string))
