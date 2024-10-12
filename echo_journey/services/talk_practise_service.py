@@ -1,5 +1,7 @@
+import copy
 import logging
 from echo_journey.api.downward_protocol_handler import DownwardProtocolHandler
+from echo_journey.api.proto.downward_pb2 import WordCorrectMessage
 from echo_journey.api.proto.upward_pb2 import AudioMessage, StudentMessage
 from echo_journey.audio.speech_to_text.asr import ASR
 from echo_journey.common.utils import parse_pinyin
@@ -33,21 +35,23 @@ class TalkPractiseService:
         self.status = ClassStatus.SCENE_GEN
 
     async def _on_message_at_scene_gen(self, student_text, platform):
-        scene_info = await self.scene_generate_bot.generate_scene_by(student_text)
+        print(f"student_text: {student_text}")
+        last_teacher_msg = self.talk_practise_bot.context.get_last_msg_of("assistant")
+        scene_info = await self.scene_generate_bot.generate_scene_by(last_teacher_msg, student_text)
         if scene_info.get("当前场景", None):
             self.status = ClassStatus.ING
             self.practise_progress.init_by_content(scene_info)
             await self.talk_practise_bot.send_practise_msg("刚开始练习", "无", platform=platform)
         else:
-            user_msg = "学生当前说话内容未包含场景，让他说个练习的场景"
-            self.talk_practise_bot.send_chat_msg(user_msg)
+            user_msg = f"学生:{student_text}\n学生状态: 学生当前说话内容未包含场景"
+            await self.talk_practise_bot.send_chat_msg(user_msg)
             
     async def _on_message_at_practise(self, student_text, platform):
-        teacher_info = self.talk_practise_bot.generate_practise_reply(student_status="练习中", student_text=student_text)
+        teacher_info = await self.talk_practise_bot.generate_practise_reply(student_status="练习中", student_text=student_text)
         if teacher_info.get("skip", False):
             skip_practise = self.practise_progress.get_current_practise()
             expected_practise = self.practise_progress.get_next_practise()
-            self.talk_practise_bot.send_practise_msg(student_status=f"学生跳过练习{skip_practise},现在开始练习{expected_practise}", student_text="无", platform=platform)
+            await self.talk_practise_bot.send_practise_msg(student_status=f"学生跳过练习{skip_practise},现在开始练习{expected_practise}", student_text="无", platform=platform)
         else:
             await self.ws_msg_handler.send_tutor_message(text=teacher_info["teacher"])
             
@@ -68,7 +72,16 @@ class TalkPractiseService:
         if not asr_result:
             await self._on_asr_reg_error()
         else:
-            await self._on_message_at_scene_gen(asr_result) 
+            await self._on_message_at_scene_gen(asr_result, platform) 
+            
+    def replace_pinyin_if_same(self, messages: list[WordCorrectMessage], expected_messages: list[WordCorrectMessage]):
+        if len(messages) != len(expected_messages):
+            return messages, expected_messages
+        else:
+            for i in range(len(messages)):
+                if messages[i].pinyin == expected_messages[i].pinyin:
+                    messages[i] = copy.deepcopy(expected_messages[i])
+            return messages, expected_messages
             
     async def _on_audio_at_practise(self, audio_message: AudioMessage, platform):
         asr_result = self.asr.transcribe(audio_message.audio_data, platform)
@@ -83,6 +96,7 @@ class TalkPractiseService:
             return
         expected_practise = self.practise_progress.get_current_practise()
         expected_messages = parse_pinyin(expected_practise)
+        messages, expected_messages = self.replace_pinyin_if_same(messages, expected_messages)
         suggestions, score = await self.correct_bot.get_correct_result(expected_messages, messages)
         if score <= 90:
             await self.ws_msg_handler.send_correct_message(suggestions=suggestions, expected_messages=expected_messages, msgs=messages)

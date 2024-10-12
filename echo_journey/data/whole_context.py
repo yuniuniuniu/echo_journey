@@ -169,7 +169,11 @@ class WholeContext():
     async def execute(self):
         async for bot_res, _ in self.submit():
             pass
-        return json.loads(bot_res[-1]["content"])
+        try:
+            return json.loads(bot_res[-1]["content"])
+        except Exception as e:
+            print(f"error: {e}")
+            print(f"bot_res: {bot_res}")
 
     async def submit(self):
         self._validate_predix_messages()

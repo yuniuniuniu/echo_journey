@@ -36,38 +36,42 @@ class Azure(SpeechToText, Singleton):
         suppress_tokens=[-1],
     ) -> str:
         import requests
-        if platform == "web":
-            audio = self._convert_webm_to_wav(audio_bytes, False)
-        elif platform == "ios":
-            audio = self._convert_m4a_to_wav(audio_bytes, False)
-        elif platform == "android":
-            audio = self._convert_webm_to_wav(audio_bytes, False)
-        else:
-            raise ValueError(f"Unsupported platform: {platform}")
+        try:
+            if platform == "web":
+                audio = self._convert_webm_to_wav(audio_bytes, False)
+            elif platform == "ios":
+                audio = self._convert_m4a_to_wav(audio_bytes, False)
+            elif platform == "android":
+                audio = self._convert_webm_to_wav(audio_bytes, False)
+            else:
+                raise ValueError(f"Unsupported platform: {platform}")
 
-        wav_data = BytesIO(audio.get_wav_data())
-        wav_data.name = "SpeechRecognition.wav"
+            wav_data = BytesIO(audio.get_wav_data())
+            wav_data.name = "SpeechRecognition.wav"
 
-        response = requests.post(
-            config.url,
-            headers={
-                "Ocp-Apim-Subscription-Key": config.app_key,
-                'Accept': 'application/json'
-            },
-            files = {
-                'audio': wav_data,
-                'definition': (None, '{"locales":["zh-CN"], "profanityFilterMode": "Masked", "channels": [0,1]}', 'application/json')
-            }
-        )
+            response = requests.post(
+                config.url,
+                headers={
+                    "Ocp-Apim-Subscription-Key": config.app_key,
+                    'Accept': 'application/json'
+                },
+                files = {
+                    'audio': wav_data,
+                    'definition': (None, '{"locales":["zh-CN"], "profanityFilterMode": "Masked", "channels": [0,1]}', 'application/json')
+                }
+            )
 
-        if response.status_code != 200:
-            err_msg = f"Error occur when Kanyun.transcribing audio, statusCode: {response.status_code}, responseContent: {response.text}"
-            logger.error(err_msg)
-            raise Exception(err_msg)
+            if response.status_code != 200:
+                err_msg = f"Error occur when Azure.transcribing audio, statusCode: {response.status_code}, responseContent: {response.text}"
+                logger.error(err_msg)
+                return None
 
-        json = response.json()
-        print("Azure transcript is: ", json)
-        return json["combinedPhrases"][0]["text"]
+            json = response.json()
+            print("Azure transcript is: ", json)
+            return json["combinedPhrases"][0]["text"]
+        except Exception as e:
+            logger.error(f"Error occur when Azure.transcribing audio: {e}")
+            return None
 
     def _convert_webm_to_wav(self, webm_data, local=True):
         webm_audio = AudioSegment.from_file(io.BytesIO(webm_data), format="webm")
