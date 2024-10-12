@@ -62,7 +62,7 @@ class Kanyun(SpeechToText, Singleton):
         if response.status_code != 200:
             err_msg = f"Error occur when Kanyun.transcribing audio, statusCode: {response.status_code}, responseContent: {response.text}"
             logger.error(err_msg)
-            raise Exception(err_msg)
+            return None
 
         json = response.json()
         print("Kanyun transcript is: ", json)
