@@ -1,8 +1,9 @@
 from echo_journey.data.whole_context import WholeContext
+import os
 
 class CorrectBot():
     def __init__(self):
-        self.context = WholeContext.generate_context_by_yaml("echo_journey/services/bots/meta/correct.yaml", "correct_bot")
+        self.context = WholeContext.generate_context_by_yaml(os.getenv("CorrectBotPath"), "correct_bot")
         
     async def get_correct_result(self, expected_messages, messages):
         format_dict = self.format_correct_bot_input(expected_messages, messages)
@@ -15,6 +16,7 @@ class CorrectBot():
                 continue
             else:
                 suggestions += suggestion + "\n"
+        print(result)
         return suggestions, int(result["score"])
     
     def format_correct_bot_input(self, expected_messages, messages):

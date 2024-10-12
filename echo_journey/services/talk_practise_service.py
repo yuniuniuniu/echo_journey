@@ -80,10 +80,11 @@ class TalkPractiseService:
         except Exception as e:
             logger.exception(f"parse pinyin error: {e} with asr_result: {asr_result}")
             await self._on_asr_reg_error()
+            return
         expected_practise = self.practise_progress.get_current_practise()
         expected_messages = parse_pinyin(expected_practise)
         suggestions, score = await self.correct_bot.get_correct_result(expected_messages, messages)
-        if score <= 80:
+        if score <= 90:
             await self.ws_msg_handler.send_correct_message(suggestions=suggestions, expected_messages=expected_messages, msgs=messages)
             await self.ws_msg_handler.send_tutor_message(text="来，我们再试一次")
         else:
