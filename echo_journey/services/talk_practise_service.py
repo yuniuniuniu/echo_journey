@@ -32,31 +32,31 @@ class TalkPractiseService:
         await self.talk_practise_bot.send_treating_msg()
         self.status = ClassStatus.SCENE_GEN
 
-    async def _on_message_at_scene_gen(self, student_text):
+    async def _on_message_at_scene_gen(self, student_text, platform):
         scene_info = await self.scene_generate_bot.generate_scene_by(student_text)
         if scene_info.get("当前场景", None):
             self.status = ClassStatus.ING
             self.practise_progress.init_by_content(scene_info)
-            await self.talk_practise_bot.send_practise_msg("刚开始练习", "无")
+            await self.talk_practise_bot.send_practise_msg("刚开始练习", "无", platform=platform)
         else:
             user_msg = "学生当前说话内容未包含场景，让他说个练习的场景"
             self.talk_practise_bot.send_chat_msg(user_msg)
             
-    async def _on_message_at_practise(self, student_text):
+    async def _on_message_at_practise(self, student_text, platform):
         teacher_info = self.talk_practise_bot.generate_practise_reply(student_status="练习中", student_text=student_text)
         if teacher_info.get("skip", False):
             skip_practise = self.practise_progress.get_current_practise()
             expected_practise = self.practise_progress.get_next_practise()
-            self.talk_practise_bot.send_practise_msg(student_status=f"学生跳过练习{skip_practise},现在开始练习{expected_practise}", student_text="无")
+            self.talk_practise_bot.send_practise_msg(student_status=f"学生跳过练习{skip_practise},现在开始练习{expected_practise}", student_text="无", platform=platform)
         else:
             await self.ws_msg_handler.send_tutor_message(text=teacher_info["teacher"])
             
-    async def process_student_message(self, student_message: StudentMessage):
+    async def process_student_message(self, student_message: StudentMessage, platfoem):
         student_text = student_message.text
         if self.status == ClassStatus.SCENE_GEN:
-            await self._on_message_at_scene_gen(student_text)
+            await self._on_message_at_scene_gen(student_text, platform=platfoem)
         elif self.status == ClassStatus.ING:
-            await self._on_message_at_practise(student_text)
+            await self._on_message_at_practise(student_text, platform=platfoem)
         else:
             raise ValueError(f"Unknown status: {self.status}")
 
@@ -91,7 +91,7 @@ class TalkPractiseService:
             passed_practise = self.practise_progress.get_current_practise()
             expected_practise = self.practise_progress.get_next_practise()
             if expected_practise:
-                await self.talk_practise_bot.send_practise_msg(student_status=f"学生通过练习{passed_practise},现在开始练习{expected_practise}", student_text="无")
+                await self.talk_practise_bot.send_practise_msg(student_status=f"学生通过练习{passed_practise},现在开始练习{expected_practise}", student_text="无", platform=platform)
             else:
                 await self.talk_practise_bot.send_end_class_msg()
 

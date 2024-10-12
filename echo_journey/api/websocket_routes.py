@@ -47,7 +47,7 @@ async def websocket_talk_practise(
             received_data_bytes = await websocket.receive_bytes()
             upward_message = unwrap_upward_message_from_bytes(received_data_bytes)
             if isinstance(upward_message, StudentMessage):
-                await talk_practise_service.process_student_message(upward_message)
+                await talk_practise_service.process_student_message(upward_message, platform)
             elif isinstance(upward_message, AudioMessage):
                 await talk_practise_service.process_audio_message(upward_message, platform)
             else:
