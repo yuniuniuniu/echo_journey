@@ -12,7 +12,9 @@ from echo_journey.data.utils import (
 )
 from .assistant_meta import AssistantMeta
 from .assistant_content import AssistantContent
+import logging
 
+logger = logging.getLogger(__name__)
 
 class WholeContext():
     def __init__(self):
@@ -50,7 +52,7 @@ class WholeContext():
 
         if "image_in_bytes" in user_msg_dict and user_msg_dict["image_in_bytes"]:
             base64_image = encode_image_bytes(user_msg_dict["image_in_bytes"])
-            print("base64_image length, ", len(base64_image))
+            logger.info("base64_image length, ", len(base64_image))
             user_msg_dict["content"] = [
                 {"type": "text", "text": user_msg_dict["content"]},
                 {
@@ -172,8 +174,8 @@ class WholeContext():
         try:
             return json.loads(bot_res[-1]["content"])
         except Exception as e:
-            print(f"error: {e}")
-            print(f"bot_res: {bot_res}")
+            logger.error(f"error: {e} bot_res: {bot_res}")
+            raise e
 
     async def submit(self):
         self._validate_predix_messages()
