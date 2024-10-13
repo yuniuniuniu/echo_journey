@@ -37,6 +37,7 @@ class PractiseProgress:
         if self.current_status == PractiseStatus.SENTENCE:
             self.current_sentence_round += 1
             self.current_word_round = 0
+            self.current_status = PractiseStatus.WORD
         elif self.current_status == PractiseStatus.WORD:
             if self.current_word_round < len(self.sentences_list[self.current_sentence_round]) - 1:
                 self.current_word_round += 1

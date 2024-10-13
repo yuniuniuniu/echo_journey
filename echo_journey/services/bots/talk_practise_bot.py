@@ -23,7 +23,7 @@ class TalkPractiseBot():
         await self.ws_msg_handler.send_tutor_message(text=treating_dict["teacher"])
         
     async def send_end_class_msg(self):
-        self.talk_practise_bot.add_user_msg_to_cur({"role": "user", "content": "这个场景的练习结束"})
+        self.context.add_user_msg_to_cur({"role": "user", "content": "这个场景的练习结束"})
         teacher_info = await self.context.execute()
         await self.ws_msg_handler.send_tutor_message(text=teacher_info["teacher"])
         
