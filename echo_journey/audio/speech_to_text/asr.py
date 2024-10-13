@@ -43,8 +43,9 @@ class ASR:
                 audio = self._convert_webm_to_wav(audio_bytes, False)
             else:
                 raise ValueError(f"Unsupported platform: {platform}")
-            wav_data = io.BytesIO(audio.get_wav_data())
-            wav_data.name = "SpeechRecognition_audio.wav"
+            wav_data = audio.get_wav_data()
+            # wav_data = io.BytesIO(audio.get_wav_data())
+            # wav_data.name = "SpeechRecognition_audio.wav"
             if expected_text:
                 import asyncio
                 asr_result, pron_result = await asyncio.gather(self.do_asr(wav_data), self.do_pronunciation_asses(wav_data, expected_text))

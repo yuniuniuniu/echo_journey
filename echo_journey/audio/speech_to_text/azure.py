@@ -32,6 +32,8 @@ class Azure(SpeechToText, Singleton):
         wav_data,
     ) -> str:
         import requests
+        wav_data_in_io = io.BytesIO(wav_data)
+        wav_data_in_io.name = "SpeechRecognition_audio.wav"
 
         response = requests.post(
             config.url,
@@ -40,7 +42,7 @@ class Azure(SpeechToText, Singleton):
                 'Accept': 'application/json'
             },
             files = {
-                'audio': wav_data,
+                'audio': wav_data_in_io,
                 'definition': (None, '{"locales":["zh-CN"], "profanityFilterMode": "Masked", "channels": [0,1]}', 'application/json')
             }
         )
@@ -51,5 +53,6 @@ class Azure(SpeechToText, Singleton):
             return None
 
         json = response.json()
-        logger.info("Azure transcript is: ", json)
-        return json["combinedPhrases"][0]["text"]
+        result = json["combinedPhrases"][0]["text"]
+        logger.info(f"Azure transcript is: {result}")
+        return result

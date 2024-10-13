@@ -32,6 +32,8 @@ class Kanyun(SpeechToText, Singleton):
         wav_data,
     ) -> str:
         import requests
+        wav_data_in_io = io.BytesIO(wav_data)
+        wav_data_in_io.name = "SpeechRecognition_audio.wav"
 
         response = requests.post(
             config.url,
@@ -49,5 +51,6 @@ class Kanyun(SpeechToText, Singleton):
             return None
 
         json = response.json()
-        logger.info("Kanyun transcript is: ", json)
-        return json["result"]
+        ret = json["result"]
+        logger.info(f"Kanyun transcript is: {ret}")
+        return ret
