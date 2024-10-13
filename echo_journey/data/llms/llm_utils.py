@@ -1,5 +1,5 @@
 from .llm import LLM
-from .llms.openai import OpenaiLLM
+from .openai import OpenaiLLM
 import yaml
 import os
 

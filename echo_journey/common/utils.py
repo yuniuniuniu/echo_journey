@@ -177,3 +177,13 @@ def generate_uuid_from_string(input_string: str) -> uuid.UUID:
     # 使用一个固定的命名空间 (dns, url, oid, or x500) 或自定义
     namespace = uuid.NAMESPACE_DNS
     return str(uuid.uuid5(namespace, input_string))
+
+
+import base64
+
+def encode_image(image_path):
+    with open(image_path, "rb") as image_file:
+        return base64.b64encode(image_file.read()).decode("utf-8")
+
+def encode_image_bytes(image_in_bytes: bytes):
+    return base64.b64encode(image_in_bytes).decode("utf-8")

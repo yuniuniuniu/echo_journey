@@ -4,9 +4,9 @@ import time
 
 import tiktoken
 import yaml
-from echo_journey.data.llm import LLM, merge_deltas
-from echo_journey.data.llm_utils import create_llm
-from echo_journey.data.utils import (
+from echo_journey.data.llms.llm import LLM, merge_deltas
+from echo_journey.data.llms.llm_utils import create_llm
+from echo_journey.common.utils import (
     encode_image,
     encode_image_bytes,
 )
