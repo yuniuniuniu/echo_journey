@@ -35,17 +35,17 @@ class TalkPractiseService:
         self.status = ClassStatus.SCENE_GEN
 
     async def _on_message_at_scene_gen(self, student_text, platform):
-        print(f"student_text: {student_text}")
+        logger.info(f"student_text: {student_text}")
         last_teacher_msg = self.talk_practise_bot.context.get_last_msg_of("assistant")
         scene_info = await self.scene_generate_bot.generate_scene_by(last_teacher_msg, student_text)
+        logger.info(f"scene_info: {scene_info}")
         if scene_info.get("当前场景", None):
             self.status = ClassStatus.ING
             self.practise_progress.init_by_content(scene_info)
             await self.talk_practise_bot.send_practise_msg("刚开始练习", "无", platform=platform)
         else:
-            user_msg = f"学生:{student_text}\n学生状态: 学生当前说话内容未包含场景"
-            await self.talk_practise_bot.send_chat_msg(user_msg)
-            
+            await self.talk_practise_bot.send_practise_msg("学生当前说话内容未包含场景", student_text, platform=platform)
+                        
     async def _on_message_at_practise(self, student_text, platform):
         teacher_info = await self.talk_practise_bot.generate_practise_reply(student_status="练习中", student_text=student_text)
         if teacher_info.get("skip", False):

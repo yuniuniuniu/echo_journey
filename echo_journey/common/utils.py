@@ -10,7 +10,7 @@ from echo_journey.api.proto.downward_pb2 import WordCorrectMessage
 import logging
 
 import contextvars
-
+logger = logging.getLogger(__name__)
 session_id_var = contextvars.ContextVar("session_id", default="N/A")
 
 class SessionFilter(logging.Filter):
@@ -47,7 +47,7 @@ class ConnectionManager(Singleton):
 
     async def disconnect(self, websocket: WebSocket):
         self.active_connections.remove(websocket)
-        print(f"Client #{id(websocket)} left the chat")
+        logger.info(f"Client #{id(websocket)} left the chat")
         # await self.broadcast_message(f"Client #{id(websocket)} left the chat")
 
     async def send_message(self, message: str, websocket: WebSocket):

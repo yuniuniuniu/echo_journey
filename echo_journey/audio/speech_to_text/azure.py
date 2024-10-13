@@ -67,7 +67,7 @@ class Azure(SpeechToText, Singleton):
                 return None
 
             json = response.json()
-            print("Azure transcript is: ", json)
+            logger.info("Azure transcript is: ", json)
             return json["combinedPhrases"][0]["text"]
         except Exception as e:
             logger.error(f"Error occur when Azure.transcribing audio: {e}")

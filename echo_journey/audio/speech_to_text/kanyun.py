@@ -66,7 +66,7 @@ class Kanyun(SpeechToText, Singleton):
                 return None
 
             json = response.json()
-            print("Kanyun transcript is: ", json)
+            logger.info("Kanyun transcript is: ", json)
             return json["result"]
         except Exception as e:
             logger.error(f"Error occur when Kanyun.transcribing audio: {e}")

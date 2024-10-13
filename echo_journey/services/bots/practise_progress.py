@@ -52,9 +52,22 @@ class PractiseProgress:
         return self.current_practise
     
     def get_current_practise(self):
-        return self.current_practise
+        return self.current_practise if self.current_practise else "无"
+    
+    def get_scene(self):
+        return self.scene if self.scene else "尚未确定"
+    
+    def get_plan(self):
+        if not self.sentences_list:
+            return "无"
+        result = []
+        for sentence in self.sentences_list:
+            result.extend(sentence)
+        return ",".join(result)
     
     def get_history_student_practise(self):
+        if not self.sentences_list:
+            return "无"
         result = []
         sentences =  self.sentences_list[:self.current_sentence_round]
         for sentence in sentences:
@@ -66,6 +79,8 @@ class PractiseProgress:
         return self.sentences_list[self.current_sentence_round][self.current_word_round]
     
     def get_cur_practise_sentence(self):
+        if not self.sentences_list:
+            return "尚未制定"
         return ",".join(self.sentences_list[self.current_sentence_round])
             
     def is_end(self):
