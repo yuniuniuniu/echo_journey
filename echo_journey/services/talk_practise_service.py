@@ -103,6 +103,7 @@ class TalkPractiseService:
         if score <= 90:
             await self.ws_msg_handler.send_correct_message(suggestions=suggestions, expected_messages=expected_messages, msgs=messages)
             await self.ws_msg_handler.send_tutor_message(text="来，我们再试一次")
+            self.talk_practise_bot.add_suggestion_to_context(suggestions)
         else:
             passed_practise = self.practise_progress.get_current_practise()
             expected_practise = self.practise_progress.get_next_practise()
