@@ -1,5 +1,7 @@
 from echo_journey.data.whole_context import WholeContext
 import os
+from dotenv import find_dotenv, load_dotenv
+_ = load_dotenv(find_dotenv())
 
 class SceneGenerateBot():
     def __init__(self):

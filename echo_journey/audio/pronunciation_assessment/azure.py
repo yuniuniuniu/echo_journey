@@ -2,7 +2,6 @@ import io
 import logging
 import os
 import types
-from io import BytesIO
 
 import speech_recognition as sr
 from pydub import AudioSegment
@@ -10,11 +9,12 @@ from pydub import AudioSegment
 from echo_journey.audio.pronunciation_assessment.base import PronunciationAssseement
 from echo_journey.common.utils import Singleton, timed
 import azure.cognitiveservices.speech as speechsdk
-import string
 import time
 
 from echo_journey.data.pronunciation_result import PronumciationResult
-import asyncio
+from dotenv import find_dotenv, load_dotenv
+_ = load_dotenv(find_dotenv())
+
 
 logger = logging.getLogger(__name__)
 
@@ -24,9 +24,6 @@ config = types.SimpleNamespace(
         "region": os.getenv("AZURE_REGION"),
     }
 )
-
-print(config.speech_key)
-print(config.region)
 
 class AzureAssessment(PronunciationAssseement, Singleton):
     def __init__(self):
@@ -59,13 +56,13 @@ class AzureAssessment(PronunciationAssseement, Singleton):
 
         def stop_cb(evt: speechsdk.SessionEventArgs):
             """callback that signals to stop continuous recognition upon receiving an event `evt`"""
-            print('CLOSING on {}'.format(evt))
+            logger.info('CLOSING on {}'.format(evt))
             nonlocal done
             done = True
 
         def recognized(evt: speechsdk.SpeechRecognitionEventArgs):
             nonlocal result
-            print('pronunciation assessment for: {}'.format(evt.result.text))
+            logger.info('pronunciation assessment for: {}'.format(evt.result.text))
             pronunciation_result = speechsdk.PronunciationAssessmentResult(evt.result)
             result.paragraph_pronunciation_score = pronunciation_result.pronunciation_score
             result.accuracy_score = pronunciation_result.accuracy_score
@@ -73,9 +70,9 @@ class AzureAssessment(PronunciationAssseement, Singleton):
             result.fluency_score = pronunciation_result.fluency_score
             result.prosody_score = pronunciation_result.prosody_score
         speech_recognizer.recognized.connect(recognized)
-        speech_recognizer.session_started.connect(lambda evt: print('SESSION STARTED: {}'.format(evt)))
-        speech_recognizer.session_stopped.connect(lambda evt: print('SESSION STOPPED {}'.format(evt)))
-        speech_recognizer.canceled.connect(lambda evt: print('CANCELED {}'.format(evt)))
+        speech_recognizer.session_started.connect(lambda evt: logger.info('SESSION STARTED: {}'.format(evt)))
+        speech_recognizer.session_stopped.connect(lambda evt: logger.info('SESSION STOPPED {}'.format(evt)))
+        speech_recognizer.canceled.connect(lambda evt: logger.info('CANCELED {}'.format(evt)))
         speech_recognizer.session_stopped.connect(stop_cb)
         speech_recognizer.canceled.connect(stop_cb)
 
