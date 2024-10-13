@@ -2,7 +2,7 @@ import logging
 from echo_journey.audio.text_to_speech.kanyun_tts import KanyunTTS
 from echo_journey.common.utils import parse_pinyin
 from echo_journey.data.whole_context import WholeContext
-from echo_journey.services.bots.practise_progress import PractiseProgress
+from echo_journey.data.practise_progress import PractiseProgress
 import os
 
 logger = logging.getLogger(__name__)

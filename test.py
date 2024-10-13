@@ -7,8 +7,6 @@ def pronunciation_assessment_continuous_from_bytes(wav_bytes):
 
     import difflib
     import json
-    import io
-
     # Creates an instance of a speech config with specified subscription key and service region.
     # Replace with your own subscription key and service region (e.g., "westus").
     speech_config = speechsdk.SpeechConfig(subscription="1ee42e99f7394ac4915f120ccfe9db73", region="eastus")
@@ -16,12 +14,11 @@ def pronunciation_assessment_continuous_from_bytes(wav_bytes):
     audio_stream = speechsdk.audio.PushAudioInputStream()
     stream_format = speechsdk.audio.AudioStreamFormat(16000, 16, 1)
     audio_config = speechsdk.audio.AudioConfig(stream=audio_stream)
-    
     # Write WAV bytes to the stream
     audio_stream.write(wav_bytes)
     audio_stream.close()
 
-    reference_text = "啊微"
+    reference_text = "我想喝咖啡"
     
     enable_miscue = True
     enable_prosody_assessment = True

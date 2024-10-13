@@ -9,7 +9,7 @@ from echo_journey.common.utils import parse_pinyin
 from enum import Enum
 
 from echo_journey.services.bots.correct_bot import CorrectBot
-from echo_journey.services.bots.practise_progress import PractiseProgress
+from echo_journey.data.practise_progress import PractiseProgress
 from echo_journey.services.bots.scene_generate_bot import SceneGenerateBot
 from echo_journey.services.bots.talk_practise_bot import TalkPractiseBot
 
@@ -69,7 +69,7 @@ class TalkPractiseService:
         await self.ws_msg_handler.send_tutor_message(text="对不起，我没有听清楚，请再说一遍")
     
     async def _on_audio_at_scene_gen(self, audio_message: AudioMessage, platform):
-        asr_result = self.asr.transcribe(audio_message.audio_data, platform)
+        asr_result, _ = await self.asr.transcribe(audio_message.audio_data, platform)
         if not asr_result:
             await self._on_asr_reg_error()
         else:
@@ -85,7 +85,8 @@ class TalkPractiseService:
             return messages, expected_messages
             
     async def _on_audio_at_practise(self, audio_message: AudioMessage, platform):
-        asr_result = self.asr.transcribe(audio_message.audio_data, platform)
+        asr_result, pron_result = await self.asr.transcribe(audio_message.audio_data, platform)
+        logger.info(f"asr_result: {asr_result}, pron_result: {pron_result}")
         if not asr_result:
             await self._on_asr_reg_error()
             return
