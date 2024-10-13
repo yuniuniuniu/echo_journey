@@ -52,7 +52,12 @@ class TalkPractiseService:
         if teacher_info.get("skip", False):
             skip_practise = self.practise_progress.get_current_practise()
             expected_practise = self.practise_progress.get_next_practise()
-            await self.talk_practise_bot.send_practise_msg(student_status=f"学生跳过练习{skip_practise},现在开始练习{expected_practise}", student_text="无", platform=platform)
+            if expected_practise:
+                await self.talk_practise_bot.send_practise_msg(student_status=f"学生跳过练习{skip_practise},现在开始练习{expected_practise}", student_text="无", platform=platform)
+            else:
+                await self.talk_practise_bot.send_end_class_msg()
+                self.status = ClassStatus.SCENE_GEN
+                self.practise_progress.reset()
         else:
             await self.ws_msg_handler.send_tutor_message(text=teacher_info["teacher"])
             
@@ -111,6 +116,8 @@ class TalkPractiseService:
                 await self.talk_practise_bot.send_practise_msg(student_status=f"学生通过练习{passed_practise},现在开始练习{expected_practise}", student_text="无", platform=platform)
             else:
                 await self.talk_practise_bot.send_end_class_msg()
+                self.status = ClassStatus.SCENE_GEN
+                self.practise_progress.reset()
 
     async def process_audio_message(self, audio_message: AudioMessage, platform):
         if self.status == ClassStatus.SCENE_GEN:
