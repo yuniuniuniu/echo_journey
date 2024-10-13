@@ -12,6 +12,9 @@ class PractiseStatus(Enum):
 
 class PractiseProgress:
     def __init__(self):
+        self.reset()
+        
+    def reset(self):
         self.current_sentence_round = None
         self.current_word_round = None
         self.scene = None
@@ -82,7 +85,11 @@ class PractiseProgress:
     def get_cur_practise_sentence(self):
         if not self.sentences_list:
             return "尚未制定"
-        return ",".join(self.sentences_list[self.current_sentence_round])
+        try:
+            return ",".join(self.sentences_list[self.current_sentence_round])
+        except Exception as e:
+            logger.exception(f"get_cur_practise_sentence error: {e}  current_sentence_round {self.current_sentence_round} sentences_list: {self.sentences_list}")
+            return "尚未制定"
             
     def is_end(self):
         return self.current_sentence_round >= len(self.sentences_list)

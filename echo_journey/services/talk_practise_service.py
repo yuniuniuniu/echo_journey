@@ -49,6 +49,12 @@ class TalkPractiseService:
                         
     async def _on_message_at_practise(self, student_text, platform):
         teacher_info = await self.talk_practise_bot.generate_practise_reply(student_status="练习中", student_text=student_text)
+        if teacher_info.get("change_scene", False):
+            self.status = ClassStatus.SCENE_GEN
+            self.practise_progress.reset()
+            await self.talk_practise_bot.send_practise_msg(student_status="学生请求更换场景", student_text=student_text, platform=platform)
+            return 
+
         if teacher_info.get("skip", False):
             skip_practise = self.practise_progress.get_current_practise()
             expected_practise = self.practise_progress.get_next_practise()
@@ -104,7 +110,12 @@ class TalkPractiseService:
         expected_practise = self.practise_progress.get_current_practise()
         expected_messages = parse_pinyin(expected_practise)
         messages, expected_messages = self.replace_pinyin_if_same(messages, expected_messages)
-        suggestions, score = await self.correct_bot.get_correct_result(expected_messages, messages)
+        suggestions, score, change_scene = await self.correct_bot.get_correct_result(expected_messages, messages)
+        if change_scene:
+            self.status = ClassStatus.SCENE_GEN
+            self.practise_progress.reset()
+            await self.talk_practise_bot.send_practise_msg(student_status="学生请求更换场景", student_text=asr_result, platform=platform)
+            return
         if score <= 90:
             await self.ws_msg_handler.send_correct_message(suggestions=suggestions, expected_messages=expected_messages, msgs=messages)
             await self.ws_msg_handler.send_tutor_message(text="来，我们再试一次")

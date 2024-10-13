@@ -26,7 +26,7 @@ class CorrectBot():
             logger.error(f"error: {e}")
             logger.error(f"result: {result}")
         logger.info(result)
-        return suggestions, int(result["score"])
+        return suggestions, int(result["score"]), result.get("change_scene", False)
     
     def format_correct_bot_input(self, expected_messages, messages):
         format_dict = {}
