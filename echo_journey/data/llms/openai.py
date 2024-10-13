@@ -5,7 +5,7 @@ import time
 
 import openai
 
-from ..llm import LLM
+from .llm import LLM
 logger = logging.getLogger(__name__)
 
 class OpenaiLLM(LLM):

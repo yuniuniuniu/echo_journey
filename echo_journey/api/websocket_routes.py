@@ -35,6 +35,7 @@ async def websocket_talk_practise(
     websocket: WebSocket,
     session_id: str = Path(...),
     platform: str = Query(default="web"),
+    deviceId: str = Query(default=None),
 ):
     session_id_var.set(session_id)
     await manager.connect(websocket)
