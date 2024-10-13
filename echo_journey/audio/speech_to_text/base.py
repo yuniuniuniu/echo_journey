@@ -8,11 +8,6 @@ class SpeechToText(ABC):
     @timed
     def transcribe(
         self,
-        audio_bytes,
-        platform="web",
-        prompt="",
-        language="en-US",
-        suppress_tokens=[-1],
+        wav_data,
     ) -> str:
-        # platform: 'web' | 'mobile' | 'terminal'
         pass
