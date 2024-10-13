@@ -3,7 +3,7 @@ import os
 
 class SceneGenerateBot():
     def __init__(self):
-        self.context = WholeContext.generate_context_by_yaml(os.getenv("SceneGenerateBotPath"), "scene_generate_bot")
+        self.context = WholeContext.generate_context_by_json(os.getenv("SceneGenerateBotPath"), "scene_generate_bot")
         
     async def generate_scene_by(self, last_teacher_msg, user_msg):
         format_dict = {}

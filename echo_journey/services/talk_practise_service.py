@@ -1,4 +1,5 @@
 import copy
+import json
 import logging
 from echo_journey.api.downward_protocol_handler import DownwardProtocolHandler
 from echo_journey.api.proto.downward_pb2 import WordCorrectMessage
@@ -36,7 +37,7 @@ class TalkPractiseService:
 
     async def _on_message_at_scene_gen(self, student_text, platform):
         logger.info(f"student_text: {student_text}")
-        last_teacher_msg = self.talk_practise_bot.context.get_last_msg_of("assistant")
+        last_teacher_msg = json.loads(self.talk_practise_bot.context.get_last_msg_of("assistant"))["teacher"]
         scene_info = await self.scene_generate_bot.generate_scene_by(last_teacher_msg, student_text)
         logger.info(f"scene_info: {scene_info}")
         if scene_info.get("当前场景", None):
