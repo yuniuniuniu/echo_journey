@@ -4,6 +4,8 @@ from echo_journey.common.utils import parse_pinyin
 from echo_journey.data.whole_context import WholeContext
 from echo_journey.data.practise_progress import PractiseProgress
 import os
+from dotenv import find_dotenv, load_dotenv
+_ = load_dotenv(find_dotenv())
 
 logger = logging.getLogger(__name__)
 

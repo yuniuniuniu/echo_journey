@@ -1,4 +1,4 @@
-# echo_journey 👇
+# Echo Journey 👇
 
 <div align="center">
 
@@ -12,7 +12,7 @@
 [![License](https://img.shields.io/github/license/yuniuniuniu/echo_journey)](https://github.com/yuniuniuniu/echo_journey/blob/main/LICENSE)
 ![Coverage Report](assets/images/coverage.svg)
 
-echo_journey is all your need
+echo journey is all your need
 
 </div>
 

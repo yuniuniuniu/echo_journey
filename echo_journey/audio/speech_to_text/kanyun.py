@@ -11,6 +11,8 @@ from echo_journey.audio.speech_to_text.base import SpeechToText
 from echo_journey.common.utils import Singleton, timed
 
 logger = logging.getLogger(__name__)
+from dotenv import find_dotenv, load_dotenv
+_ = load_dotenv(find_dotenv())
 
 config = types.SimpleNamespace(
     **{

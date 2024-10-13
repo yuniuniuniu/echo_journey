@@ -1,6 +1,8 @@
 from echo_journey.data.whole_context import WholeContext
 import os
 import logging
+from dotenv import find_dotenv, load_dotenv
+_ = load_dotenv(find_dotenv())
 
 logger = logging.getLogger(__name__)
 

@@ -5,10 +5,11 @@ import types
 from io import BytesIO
 
 import speech_recognition as sr
-from pydub import AudioSegment
 
 from echo_journey.audio.speech_to_text.base import SpeechToText
 from echo_journey.common.utils import Singleton, timed
+from dotenv import find_dotenv, load_dotenv
+_ = load_dotenv(find_dotenv())
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +19,6 @@ config = types.SimpleNamespace(
         "app_key": os.getenv("AZURE_ASR_APP_KEY"),
     }
 )
-
 
 class Azure(SpeechToText, Singleton):
     def __init__(self):

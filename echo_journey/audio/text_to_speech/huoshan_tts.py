@@ -13,6 +13,8 @@ from echo_journey.audio.text_to_speech.base import (
     TextAudioTimeline,
 )
 from echo_journey.common.utils import Singleton, timed, get_timer
+from dotenv import find_dotenv, load_dotenv
+_ = load_dotenv(find_dotenv())
 
 logger = logging.getLogger(__name__)
 
