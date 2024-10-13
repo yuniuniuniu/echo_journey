@@ -68,17 +68,13 @@ class WholeContext():
         self.cur_chat_history.append(assistant_msg_dict)
 
     def get_last_msg_of(self, role):
-        if not self.cur_chat_history:
+        if not self.cur_chat_history and not self.cur_visible_assistant.content.prefix_messages_in_list:
             return None
-        for msg in reversed(self.cur_chat_history):
+        search_list = self.cur_visible_assistant.content.prefix_messages_in_list + self.cur_chat_history
+        for msg in reversed(search_list):
             if msg["role"] == role:
                 return msg["content"]
         return None
-
-    def get_role_of_last_msg(self):
-        if not self.cur_chat_history:
-            return None
-        return self.cur_chat_history[-1]["role"]
 
     def user_visible_msgs_view_commit_full_history(self, prefix_messages_in_list):
         chat_history_with_prefix_msgs = prefix_messages_in_list + self.cur_chat_history
@@ -143,9 +139,6 @@ class WholeContext():
     def clear(self):
         self.cur_chat_history.clear()
 
-    def recover_history_from(self, messages):
-        self.cur_chat_history = copy.deepcopy(messages)
-
     @classmethod
     def build_from(
         cls,
@@ -172,6 +165,7 @@ class WholeContext():
         async for bot_res, _ in self.submit():
             pass
         try:
+            self.add_assistant_msg_to_cur(bot_res[0])
             return json.loads(bot_res[-1]["content"])
         except Exception as e:
             logger.error(f"error: {e} bot_res: {bot_res}")
@@ -246,38 +240,6 @@ class WholeContext():
     def get_token_count(self, text):
         enc = tiktoken.get_encoding("cl100k_base")
         return len(enc.encode(text))
-
-    async def travel_with_generator(
-        self,
-        cur_round_user_msg_info: dict,
-        llm: LLM = None,
-    ):
-        self.llm = llm if llm else self.llm
-        async for bot_res_list, _ in self.submit():
-            yield bot_res_list
-        for bot_res in bot_res_list:
-            self.add_assistant_msg_to_cur(bot_res)
-
-    async def travel_with_callback(
-        self,
-        cur_round_user_msg_info: dict,
-        llm: LLM,
-        on_new_delta: callable,
-    ):
-        last_bot_res = []
-        bot_req = self.cur_chat_history[-1]
-        self.llm = llm if llm else self.llm
-        async for bot_res, delta in self.submit():
-            if "content" in delta:
-                await on_new_delta(self.get_id(), bot_req, bot_res, delta)
-                last_bot_res = bot_res
-        await on_new_delta(
-            self.get_id(),
-            bot_req,
-            last_bot_res,
-            {"content": ""},
-            is_assistant_request_completed=True,
-        )
 
     def get_id(self):
         return self.cur_visible_assistant.get_id()

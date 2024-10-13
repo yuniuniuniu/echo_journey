@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 
 class CorrectBot():
     def __init__(self):
-        self.context = WholeContext.generate_context_by_yaml(os.getenv("CorrectBotPath"), "correct_bot")
+        self.context = WholeContext.generate_context_by_json(os.getenv("CorrectBotPath"), "correct_bot")
         
     async def get_correct_result(self, expected_messages, messages):
         format_dict = self.format_correct_bot_input(expected_messages, messages)
@@ -30,13 +30,14 @@ class CorrectBot():
         format_dict = {}
         expected_sentence = ""
         for expected_message in expected_messages:
+            expected_sentence += expected_message.word
             expected_sentence += expected_message.pinyin
             expected_sentence += str(expected_message.tone)
             
         sentence = ""
         for message in messages:
             sentence += message.word
-            sentence += expected_message.pinyin
+            sentence += message.pinyin
             sentence += str(message.tone)
         format_dict["expected_sentence"] = expected_sentence
         format_dict["sentence"] = sentence
