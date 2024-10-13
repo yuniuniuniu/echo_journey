@@ -25,6 +25,9 @@ config = types.SimpleNamespace(
     }
 )
 
+print(config.speech_key)
+print(config.region)
+
 class AzureAssessment(PronunciationAssseement, Singleton):
     def __init__(self):
         super().__init__()
@@ -69,20 +72,6 @@ class AzureAssessment(PronunciationAssseement, Singleton):
             result.completeness_score = pronunciation_result.completeness_score
             result.fluency_score = pronunciation_result.fluency_score
             result.prosody_score = pronunciation_result.prosody_score
-        #     print('    Accuracy score: {}, pronunciation score: {}, completeness score : {}, fluency score: {}, prosody score: {}'.format(
-        #         pronunciation_result.accuracy_score, pronunciation_result.pronunciation_score,
-        #         pronunciation_result.completeness_score, pronunciation_result.fluency_score, pronunciation_result.prosody_score
-        #     ))
-        #     nonlocal recognized_words, fluency_scores, durations, prosody_scores
-        #     recognized_words += pronunciation_result.words
-        #     fluency_scores.append(pronunciation_result.fluency_score)
-        #     prosody_scores.append(pronunciation_result.prosody_score)
-        #     json_result = evt.result.properties.get(speechsdk.PropertyId.SpeechServiceResponse_JsonResult)
-        #     jo = json.loads(json_result)
-        #     nb = jo['NBest'][0]
-        #     durations.append(sum([int(w['Duration']) for w in nb['Words']]))
-
-        # # Connect callbacks to the events fired by the speech recognizer
         speech_recognizer.recognized.connect(recognized)
         speech_recognizer.session_started.connect(lambda evt: print('SESSION STARTED: {}'.format(evt)))
         speech_recognizer.session_stopped.connect(lambda evt: print('SESSION STOPPED {}'.format(evt)))
@@ -104,7 +93,7 @@ class AzureAssessment(PronunciationAssseement, Singleton):
         expected_text
     ) -> str:
         try:
-            return await self.pronunciation_assessment_continuous_from_bytes(wav_data.getvalue(), expected_text)    
+            return await self.pronunciation_assessment_continuous_from_bytes(wav_data, expected_text)    
         except Exception as e:
             logger.error(f"Error occur when Azure.assessment : {e}")
             return None
