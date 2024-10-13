@@ -161,8 +161,7 @@ def parse_pinyin(text):
             yunmu = yunmu_list_with_tone[i]
         else:
             yunmu = pinyin[len(shengmu):]
-        
-        if yunmu[-1].isdigit():
+        if len(yunmu) > 0 and yunmu[-1].isdigit():
             tone = yunmu[-1]
             yunmu = yunmu[:-1]
         else:

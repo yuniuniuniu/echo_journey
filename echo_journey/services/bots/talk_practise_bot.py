@@ -57,7 +57,11 @@ class TalkPractiseBot():
         teacher_info = await self.generate_practise_reply(student_status, student_text)
         expected_practise = self.practise_progress.get_current_practise()
         if expected_practise and expected_practise != "无":
-            expected_messages = parse_pinyin(expected_practise)
+            try:
+                expected_messages = parse_pinyin(expected_practise)
+            except Exception as e:
+                logger.error(f"error: {e} expected_practise: {expected_practise}")
+                return 
             audio_bytes = await self.tts.generate_audio(expected_practise, platform=platform)
             await self.ws_msg_handler.send_tutor_message(text=teacher_info["teacher"], expected_messages=expected_messages, audio_bytes=audio_bytes)
         else:

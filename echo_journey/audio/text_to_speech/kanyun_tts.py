@@ -48,7 +48,7 @@ class KanyunTTS(Singleton, TextToSpeech):
         if platform == "web" or platform == "android":
             audio_segment.export(output_io, format="webm")
         elif platform == "ios":
-            audio_segment.export(output_io, format="ipod")
+            audio_segment.export(output_io, format="wav")
         else:
             raise ValueError(f"Unsupported platform: {platform}")
         return output_io.getvalue()
