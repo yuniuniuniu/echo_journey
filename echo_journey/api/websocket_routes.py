@@ -6,7 +6,7 @@ from echo_journey.api.proto.upward_message_wrapper import unwrap_upward_message_
 from echo_journey.api.proto.upward_pb2 import AudioMessage, StudentMessage
 from echo_journey.common.utils import get_connection_manager
 from echo_journey.services.talk_practise_service import TalkPractiseService
-from echo_journey.common.utils import session_id_var
+from echo_journey.common.utils import session_id_var, device_id_var
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
@@ -38,9 +38,10 @@ async def websocket_talk_practise(
     deviceId: str = Query(default=None),
 ):
     session_id_var.set(session_id)
+    device_id_var.set(deviceId)
     await manager.connect(websocket)
     ws_msg_handler = DownwardProtocolHandler(websocket, manager)
-    talk_practise_service = TalkPractiseService(session_id, ws_msg_handler)
+    talk_practise_service = TalkPractiseService(ws_msg_handler)
     await talk_practise_service.initialize()
         
     try:
@@ -54,7 +55,9 @@ async def websocket_talk_practise(
             else:
                 raise ValueError(f"Unknown message type: {upward_message.type}")
     except WebSocketDisconnect:
+        talk_practise_service.on_ws_disconnect()
         await manager.disconnect(websocket)
     except Exception as e:
         logger.exception(f"Caught exception: {e}")
+        talk_practise_service.on_ws_disconnect()
         await manager.disconnect(websocket)

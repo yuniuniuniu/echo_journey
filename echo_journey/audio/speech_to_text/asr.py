@@ -3,7 +3,7 @@ import logging
 from echo_journey.audio.pronunciation_assessment.azure import AzureAssessment
 from echo_journey.audio.speech_to_text.azure import Azure
 from echo_journey.audio.speech_to_text.kanyun import Kanyun
-from echo_journey.common.utils import parse_pinyin
+from echo_journey.common.utils import parse_pinyin, device_id_var, session_id_var
 import speech_recognition as sr
 from pydub import AudioSegment
 
@@ -34,6 +34,8 @@ class ASR:
         return sr.AudioData(audio_bytes, 16000, 2)
 
     async def transcribe(self, audio_bytes, platform="web", expected_text=None) -> str:
+        device_id = device_id_var.get()
+        session_id = session_id_var.get()
         try:
             if platform == "web":
                 audio = self._convert_webm_to_wav(audio_bytes, False)
@@ -46,17 +48,19 @@ class ASR:
             wav_data = audio.get_wav_data()
             audio_segment = AudioSegment.from_wav(io.BytesIO(wav_data))
 
-            # wav_data = io.BytesIO(audio.get_wav_data())
-            # wav_data.name = "SpeechRecognition_audio.wav"
+            export_wav_dir_path = f"user_info/{device_id}/asr_data"
+            import os
+            if not os.path.exists(export_wav_dir_path):
+                os.makedirs(export_wav_dir_path)
             if expected_text:
                 import asyncio
                 asr_result, pron_result = await asyncio.gather(self.do_asr(wav_data), self.do_pronunciation_asses(wav_data, expected_text))
-                name = f"asr_data/SpeechRecognition_audio_{asr_result}_{expected_text}.wav" if asr_result else "asr_data/SpeechRecognition_audio_null_{expected_text}.wav"
+                name = f"{export_wav_dir_path}/SpeechRecognition_audio_{session_id}_{asr_result}_{expected_text}.wav" if asr_result else f"{export_wav_dir_path}/SpeechRecognition_audio_{session_id}_null_{expected_text}.wav"
                 audio_segment.export(name, format="wav")
                 return asr_result, pron_result  
             else:
                 asr_result = await self.do_asr(wav_data)
-                name = f"asr_data/SpeechRecognition_audio_{asr_result}.wav" if asr_result else "asr_data/SpeechRecognition_audio.wav"
+                name = f"{export_wav_dir_path}/SpeechRecognition_audio_{session_id}_{asr_result}.wav" if asr_result else f"{export_wav_dir_path}/SpeechRecognition_audio_{session_id}_null.wav"
                 audio_segment.export(name, format="wav")
                 return asr_result, None
         except Exception as e:
