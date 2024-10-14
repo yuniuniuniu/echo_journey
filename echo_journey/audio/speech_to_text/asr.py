@@ -44,14 +44,20 @@ class ASR:
             else:
                 raise ValueError(f"Unsupported platform: {platform}")
             wav_data = audio.get_wav_data()
+            audio_segment = AudioSegment.from_wav(io.BytesIO(wav_data))
+
             # wav_data = io.BytesIO(audio.get_wav_data())
             # wav_data.name = "SpeechRecognition_audio.wav"
             if expected_text:
                 import asyncio
                 asr_result, pron_result = await asyncio.gather(self.do_asr(wav_data), self.do_pronunciation_asses(wav_data, expected_text))
+                name = f"asr_data/SpeechRecognition_audio_{asr_result}_{expected_text}.wav" if asr_result else "asr_data/SpeechRecognition_audio_null_{expected_text}.wav"
+                audio_segment.export(name, format="wav")
                 return asr_result, pron_result  
             else:
                 asr_result = await self.do_asr(wav_data)
+                name = f"asr_data/SpeechRecognition_audio_{asr_result}.wav" if asr_result else "asr_data/SpeechRecognition_audio.wav"
+                audio_segment.export(name, format="wav")
                 return asr_result, None
         except Exception as e:
             logger.error(f"Error occur when ASR.transcribe : {e}")
