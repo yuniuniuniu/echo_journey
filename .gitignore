@@ -10,7 +10,7 @@ venv
 .env
 # Icon must end with two \r
 Icon
-
+/asr_data
 # Thumbnails
 ._*
 
