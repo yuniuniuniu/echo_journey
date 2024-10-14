@@ -12,6 +12,7 @@ import logging
 import contextvars
 logger = logging.getLogger(__name__)
 session_id_var = contextvars.ContextVar("session_id", default="N/A")
+device_id_var = contextvars.ContextVar("device_id", default="N/A")
 
 class SessionFilter(logging.Filter):
     def filter(self, record):

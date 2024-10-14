@@ -1,3 +1,5 @@
+from echo_journey.data.learn_situation import LearnSituation
+from echo_journey.data.practise_progress import PractiseProgress
 from echo_journey.data.whole_context import WholeContext
 import os
 import logging
@@ -7,8 +9,11 @@ _ = load_dotenv(find_dotenv())
 logger = logging.getLogger(__name__)
 
 class CorrectBot():
-    def __init__(self):
+    def __init__(self, learn_situation: LearnSituation, practise_progress: PractiseProgress):
+        self.learn_situation = learn_situation
+        self.practise_progress = practise_progress
         self.context = WholeContext.generate_context_by_json(os.getenv("CorrectBotPath"), "correct_bot")
+        self.success_score = 90
         
     async def get_correct_result(self, expected_messages, messages):
         format_dict = self.format_correct_bot_input(expected_messages, messages)
@@ -26,7 +31,16 @@ class CorrectBot():
             logger.error(f"error: {e}")
             logger.error(f"result: {result}")
         logger.info(result)
-        return suggestions, int(result["score"]), result.get("change_scene", False)
+        score = int(result["score"])
+        expected_words = ""
+        words = ""
+        for expected_message in expected_messages:
+            expected_words += expected_message.word
+        for message in messages:
+            words += message.word
+        if score <= self.success_score:
+            self.learn_situation.update(self.practise_progress.get_scene(), expected_words, words)
+        return suggestions, score, result.get("change_scene", False)
     
     def format_correct_bot_input(self, expected_messages, messages):
         format_dict = {}
