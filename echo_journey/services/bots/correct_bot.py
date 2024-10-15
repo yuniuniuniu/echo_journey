@@ -22,11 +22,13 @@ class CorrectBot():
         result =  await self.context.execute()
         suggestions = ""
         try:
-            for suggestion in result["suggestion_list"]:
-                if not suggestion or suggestion == "null":
-                    continue
-                else:
-                    suggestions += str(suggestion) + "\n"
+            # problem = result.get("problem", None)
+            # if not problem:
+            #     problem = ""
+            # suggestions += problem + "\n"
+            suggestion_dict = result.get("suggestion_dict", None)
+            for term, suggestion in suggestion_dict.items():
+                suggestions += f"- {term}: {suggestion}\n"
         except Exception as e:
             logger.error(f"error: {e}")
             logger.error(f"result: {result}")
