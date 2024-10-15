@@ -147,7 +147,7 @@ def chinese_to_pinyin(text, style=Style.TONE, delimiter=' '):
 
 def parse_pinyin(text):
     result = []
-    text = text.replace(",", "").replace("，", "").replace("。", "").replace("？", "").replace("！", "").replace("；", "").replace("：", "").replace("、", "").replace(" ", "").replace("\n", "").replace("\t", "").replace("\r", "").replace("“", "").replace("”", "").replace("‘", "").replace("’", "").replace("（", "").replace("）", "").replace("《", "").replace("》", "").replace("【", "").replace("】", "").replace("—", "").replace("…", "").replace("·", "").replace("「", "").replace("」", "").replace("『", "").replace("』", "").replace("〈", "").replace("〉", "")
+    text = text.replace(",", "").replace("，", "").replace("。", "").replace(".", "").replace("？", "").replace("！", "").replace("；", "").replace("：", "").replace("、", "").replace(" ", "").replace("\n", "").replace("\t", "").replace("\r", "").replace("“", "").replace("”", "").replace("‘", "").replace("’", "").replace("（", "").replace("）", "").replace("《", "").replace("》", "").replace("【", "").replace("】", "").replace("—", "").replace("…", "").replace("·", "").replace("「", "").replace("」", "").replace("『", "").replace("』", "").replace("〈", "").replace("〉", "")
     
     pinyin_list = lazy_pinyin(text, style=Style.TONE3, neutral_tone_with_five=True)
     shengmu_list = lazy_pinyin(text, style=Style.INITIALS)
