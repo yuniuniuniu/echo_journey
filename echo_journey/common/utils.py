@@ -133,14 +133,6 @@ from pypinyin import lazy_pinyin, Style, pinyin
 
 
 def chinese_to_pinyin(text, style=Style.TONE, delimiter=' '):
-    """
-    将中文转换为拼音。
-    
-    :param text: 要转换的中文字符串
-    :param style: 拼音的样式，默认是带声调的拼音
-    :param delimiter: 拼音之间的分隔符，默认用空格分隔
-    :return: 转换后的拼音字符串
-    """
     pinyin_list = pinyin(text, style=style)
     pinyin_str = delimiter.join([''.join(item) for item in pinyin_list])
     return pinyin_str
@@ -150,24 +142,22 @@ def parse_pinyin(text):
     text = text.replace(",", "").replace("，", "").replace("。", "").replace(".", "").replace("？", "").replace("！", "").replace("；", "").replace("：", "").replace("、", "").replace(" ", "").replace("\n", "").replace("\t", "").replace("\r", "").replace("“", "").replace("”", "").replace("‘", "").replace("’", "").replace("（", "").replace("）", "").replace("《", "").replace("》", "").replace("【", "").replace("】", "").replace("—", "").replace("…", "").replace("·", "").replace("「", "").replace("」", "").replace("『", "").replace("』", "").replace("〈", "").replace("〉", "")
     
     pinyin_list = lazy_pinyin(text, style=Style.TONE3, neutral_tone_with_five=True)
-    shengmu_list = lazy_pinyin(text, style=Style.INITIALS)
-    yunmu_list_with_tone = lazy_pinyin(text, style=Style.FINALS_TONE3, neutral_tone_with_five=True)
-    
+    shengmu_list = lazy_pinyin(text, style=Style.INITIALS)   
+
     for i, char in enumerate(text):
         pinyin = pinyin_list[i]
         shengmu = shengmu_list[i]
-
-        # 如果声母为空，说明这个字没有声母
-        if shengmu == '':
-            yunmu = yunmu_list_with_tone[i]
-        else:
-            yunmu = pinyin[len(shengmu):]
-        if len(yunmu) > 0 and yunmu[-1].isdigit():
-            tone = yunmu[-1]
-            yunmu = yunmu[:-1]
+        pretty_pinyin=chinese_to_pinyin(char)
+        pinyin_wo_tone = chinese_to_pinyin(char, Style.NORMAL)
+        
+        if len(pinyin) > 0 and pinyin[-1].isdigit():
+            tone = pinyin[-1]
         else:
             tone = '5'
-        result.append(WordCorrectMessage(word=char, initial_consonant=shengmu, vowels=yunmu, tone=int(tone), pinyin=chinese_to_pinyin(char)))
+            
+        yunmu = pinyin_wo_tone[len(shengmu):]
+        
+        result.append(WordCorrectMessage(word=char, initial_consonant=shengmu, vowels=yunmu, tone=int(tone), pinyin=pretty_pinyin))
     return result
 
 
