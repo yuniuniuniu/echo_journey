@@ -13,19 +13,35 @@ class CorrectBot():
         self.learn_situation = learn_situation
         self.practise_progress = practise_progress
         self.context = WholeContext.generate_context_by_json(os.getenv("CorrectBotPath"), "correct_bot")
+        self.finals_oss_path = os.getenv("FINALS_OSS_PATH")
+        self.initials_oss_path = os.getenv("INITIALS_OSS_PATH")
         self.success_score = 90
         
+    def find_error(self, expected_messages, messages):
+        result = {}
+        for index, expected_message in enumerate(expected_messages):
+            if index >= len(messages):
+                break
+            else:
+                message = messages[index]
+                if expected_message.initial_consonant != message.initial_consonant:
+                    key = f"声母 {expected_message.initial_consonant}"
+                    result[key] = self.initials_oss_path + expected_message.initial_consonant + ".mp4"
+                    
+                    
+                if expected_message.vowels != message.vowels:
+                    key = f"韵母 {expected_message.vowels}"
+                    result[key] = self.finals_oss_path + expected_message.vowels + ".mp4"
+        return result
+            
     async def get_correct_result(self, expected_messages, messages):
         format_dict = self.format_correct_bot_input(expected_messages, messages)
         user_msg = self.context.cur_visible_assistant.content.user_prompt_prefix.format(**format_dict)
         self.context.add_user_msg_to_cur({"role": "user", "content": user_msg})
         result =  await self.context.execute()
         suggestions = ""
+        name_2_mp4_url = self.find_error(expected_messages, messages)
         try:
-            # problem = result.get("problem", None)
-            # if not problem:
-            #     problem = ""
-            # suggestions += problem + "\n"
             suggestion_dict = result.get("suggestion_dict", None)
             for term, suggestion in suggestion_dict.items():
                 suggestions += f"- {term}: {suggestion}\n"
@@ -42,7 +58,7 @@ class CorrectBot():
             words += message.word
         if score <= self.success_score:
             self.learn_situation.update(self.practise_progress.get_scene(), expected_words, words)
-        return suggestions, score, result.get("change_scene", False)
+        return suggestions, score, result.get("change_scene", False), name_2_mp4_url
     
     def format_correct_bot_input(self, expected_messages, messages):
         format_dict = {}

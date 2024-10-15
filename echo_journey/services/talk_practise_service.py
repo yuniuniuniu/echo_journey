@@ -114,14 +114,14 @@ class TalkPractiseService:
         expected_practise = self.practise_progress.get_current_practise()
         expected_messages = parse_pinyin(expected_practise)
         messages, expected_messages = self.replace_pinyin_if_same(messages, expected_messages)
-        suggestions, score, change_scene = await self.correct_bot.get_correct_result(expected_messages, messages)
+        suggestions, score, change_scene, name_2_mp4_url = await self.correct_bot.get_correct_result(expected_messages, messages)
         if change_scene:
             self.status = ClassStatus.SCENE_GEN
             self.practise_progress.reset()
             await self.talk_practise_bot.send_practise_msg(student_status="学生请求更换场景", student_text=asr_result, platform=platform)
             return
         if score <= self.correct_bot.success_score:
-            await self.ws_msg_handler.send_correct_message(suggestions=suggestions, expected_messages=expected_messages, msgs=messages, pron=pron_result)
+            await self.ws_msg_handler.send_correct_message(suggestions=suggestions, expected_messages=expected_messages, msgs=messages, pron=pron_result, name_2_mp4_url=name_2_mp4_url)
             await self.ws_msg_handler.send_tutor_message(text="来，我们再试一次")
             self.talk_practise_bot.add_suggestion_to_context(suggestions)
         else:

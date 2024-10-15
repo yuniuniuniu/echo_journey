@@ -41,6 +41,7 @@ class DownwardProtocolHandler:
         expected_msgs = None,
         msgs = None,
         pron = None,
+        name_2_mp4_url = None
     ):
         sentence_correct_message = SentenceCorrectMessage()
         if expected_msgs:
@@ -50,11 +51,17 @@ class DownwardProtocolHandler:
         if pron:
             sentence_correct_message.accuracy_score = pron.accuracy_score
             sentence_correct_message.fluency_score = pron.fluency_score
+        if name_2_mp4_url:
+            for name, mp4_url in name_2_mp4_url.items():
+                correct_mp4_info = sentence_correct_message.correct_mp4_info.add()
+                correct_mp4_info.mp4_url = mp4_url
+                correct_mp4_info.text = name
+            logger.info(f"name_2_mp4_url: {name_2_mp4_url}")
         sentence_correct_message.suggestions = suggestions
         return sentence_correct_message
 
-    async def send_correct_message(self, suggestions, expected_messages, msgs, pron):
-        correct_msg = self.build_sentence_correct_message(suggestions, expected_messages, msgs, pron)
+    async def send_correct_message(self, suggestions, expected_messages, msgs, pron, name_2_mp4_url):
+        correct_msg = self.build_sentence_correct_message(suggestions, expected_messages, msgs, pron, name_2_mp4_url)
         await self.send_websocket_downward_message(
             wrap_downward_message(correct_msg)
         )
