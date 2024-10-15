@@ -155,8 +155,11 @@ def parse_pinyin(text):
         else:
             tone = '5'
             
-        yunmu = pinyin_wo_tone[len(shengmu):]
-        
+        if not shengmu and len(pinyin_wo_tone) > 0 and pinyin_wo_tone[0] in {'y', 'w'}:
+            yunmu = pinyin_wo_tone[1:]       
+        else:
+            yunmu = pinyin_wo_tone[len(shengmu):]
+            
         result.append(WordCorrectMessage(word=char, initial_consonant=shengmu, vowels=yunmu, tone=int(tone), pinyin=pretty_pinyin))
     return result
 
