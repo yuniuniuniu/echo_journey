@@ -49,12 +49,26 @@ class WordCorrectMessage(_message.Message):
     pinyin: str
     def __init__(self, word: _Optional[str] = ..., initial_consonant: _Optional[str] = ..., vowels: _Optional[str] = ..., tone: _Optional[int] = ..., pinyin: _Optional[str] = ...) -> None: ...
 
+class CorrectMp4InfoMessage(_message.Message):
+    __slots__ = ("mp4_url", "text")
+    MP4_URL_FIELD_NUMBER: _ClassVar[int]
+    TEXT_FIELD_NUMBER: _ClassVar[int]
+    mp4_url: str
+    text: str
+    def __init__(self, mp4_url: _Optional[str] = ..., text: _Optional[str] = ...) -> None: ...
+
 class SentenceCorrectMessage(_message.Message):
-    __slots__ = ("expected_messages", "messages", "suggestions")
+    __slots__ = ("expected_messages", "messages", "suggestions", "accuracy_score", "fluency_score", "correct_mp4_info")
     EXPECTED_MESSAGES_FIELD_NUMBER: _ClassVar[int]
     MESSAGES_FIELD_NUMBER: _ClassVar[int]
     SUGGESTIONS_FIELD_NUMBER: _ClassVar[int]
+    ACCURACY_SCORE_FIELD_NUMBER: _ClassVar[int]
+    FLUENCY_SCORE_FIELD_NUMBER: _ClassVar[int]
+    CORRECT_MP4_INFO_FIELD_NUMBER: _ClassVar[int]
     expected_messages: _containers.RepeatedCompositeFieldContainer[WordCorrectMessage]
     messages: _containers.RepeatedCompositeFieldContainer[WordCorrectMessage]
     suggestions: str
-    def __init__(self, expected_messages: _Optional[_Iterable[_Union[WordCorrectMessage, _Mapping]]] = ..., messages: _Optional[_Iterable[_Union[WordCorrectMessage, _Mapping]]] = ..., suggestions: _Optional[str] = ...) -> None: ...
+    accuracy_score: float
+    fluency_score: float
+    correct_mp4_info: _containers.RepeatedCompositeFieldContainer[CorrectMp4InfoMessage]
+    def __init__(self, expected_messages: _Optional[_Iterable[_Union[WordCorrectMessage, _Mapping]]] = ..., messages: _Optional[_Iterable[_Union[WordCorrectMessage, _Mapping]]] = ..., suggestions: _Optional[str] = ..., accuracy_score: _Optional[float] = ..., fluency_score: _Optional[float] = ..., correct_mp4_info: _Optional[_Iterable[_Union[CorrectMp4InfoMessage, _Mapping]]] = ...) -> None: ...

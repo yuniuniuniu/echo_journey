@@ -100,7 +100,7 @@ class TalkPractiseService:
             return messages, expected_messages
             
     async def _on_audio_at_practise(self, audio_message: AudioMessage, platform):
-        asr_result, pron_result = await self.asr.transcribe(audio_message.audio_data, platform)
+        asr_result, pron_result = await self.asr.transcribe(audio_message.audio_data, platform, expected_text=self.practise_progress.get_current_practise())
         logger.info(f"asr_result: {asr_result}, pron_result: {pron_result}")
         if not asr_result:
             await self._on_asr_reg_error()
@@ -121,7 +121,7 @@ class TalkPractiseService:
             await self.talk_practise_bot.send_practise_msg(student_status="学生请求更换场景", student_text=asr_result, platform=platform)
             return
         if score <= self.correct_bot.success_score:
-            await self.ws_msg_handler.send_correct_message(suggestions=suggestions, expected_messages=expected_messages, msgs=messages)
+            await self.ws_msg_handler.send_correct_message(suggestions=suggestions, expected_messages=expected_messages, msgs=messages, pron=pron_result)
             await self.ws_msg_handler.send_tutor_message(text="来，我们再试一次")
             self.talk_practise_bot.add_suggestion_to_context(suggestions)
         else:

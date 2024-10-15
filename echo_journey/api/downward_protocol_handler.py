@@ -40,17 +40,21 @@ class DownwardProtocolHandler:
         suggestions,
         expected_msgs = None,
         msgs = None,
+        pron = None,
     ):
         sentence_correct_message = SentenceCorrectMessage()
         if expected_msgs:
             sentence_correct_message.expected_messages.extend(expected_msgs)
         if msgs:
             sentence_correct_message.messages.extend(msgs)
+        if pron:
+            sentence_correct_message.accuracy_score = pron.accuracy_score
+            sentence_correct_message.fluency_score = pron.fluency_score
         sentence_correct_message.suggestions = suggestions
         return sentence_correct_message
 
-    async def send_correct_message(self, suggestions, expected_messages, msgs):
-        correct_msg = self.build_sentence_correct_message(suggestions, expected_messages, msgs)
+    async def send_correct_message(self, suggestions, expected_messages, msgs, pron):
+        correct_msg = self.build_sentence_correct_message(suggestions, expected_messages, msgs, pron)
         await self.send_websocket_downward_message(
             wrap_downward_message(correct_msg)
         )

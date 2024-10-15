@@ -28,8 +28,16 @@ message WordCorrectMessage {
     string pinyin = 5;
 }
 
+message CorrectMp4InfoMessage {
+    string mp4_url = 1;
+    string text = 2;
+}
+
 message SentenceCorrectMessage {
     repeated WordCorrectMessage expected_messages = 1;
     repeated WordCorrectMessage messages = 2;
     string suggestions = 3;
+    float accuracy_score = 4;
+    float fluency_score = 5; 
+    repeated CorrectMp4InfoMessage correct_mp4_info = 6;
 }
