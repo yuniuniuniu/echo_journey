@@ -37,12 +37,10 @@ class ASR:
         device_id = device_id_var.get()
         session_id = session_id_var.get()
         try:
-            if platform == "web":
+            if platform == "web" or platform == "web-android":
                 audio = self._convert_webm_to_wav(audio_bytes, False)
-            elif platform == "ios":
+            elif platform == "ios" or platform == "android" or platform == "web-ios":
                 audio = self._convert_m4a_to_wav(audio_bytes, False)
-            elif platform == "android":
-                audio = self._convert_webm_to_wav(audio_bytes, False)
             else:
                 raise ValueError(f"Unsupported platform: {platform}")
             wav_data = audio.get_wav_data()
