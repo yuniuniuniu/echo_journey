@@ -1,0 +1,12 @@
+{
+    "ia": ["i", "a"],
+    "ua": ["u", "a"],
+    "uo": ["u", "o"],
+    "uai": ["u", "ai"],
+    "uan": ["u", "an"],
+    "ian": ["i", "an"],
+    "iao": ["i", "ao"],
+    "iang": ["i", "ang"],
+    "uang": ["u", "ang"],
+    "iong": ["i", "ong"]
+}

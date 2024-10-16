@@ -8,6 +8,7 @@ from echo_journey.audio.speech_to_text.asr import ASR
 from echo_journey.common.utils import parse_pinyin
 from enum import Enum
 
+from echo_journey.data.class_status import ClassStatus
 from echo_journey.data.learn_situation import LearnSituation
 from echo_journey.services.bots.correct_bot import CorrectBot
 from echo_journey.data.practise_progress import PractiseProgress
@@ -16,10 +17,6 @@ from echo_journey.services.bots.talk_practise_bot import TalkPractiseBot
 
 logger = logging.getLogger(__name__)
 
-class ClassStatus(Enum):
-    NOTSTART = 1
-    SCENE_GEN = 2
-    ING = 3
 
 class TalkPractiseService:
     def __init__(self, ws_msg_handler):
@@ -100,7 +97,7 @@ class TalkPractiseService:
             return messages, expected_messages
             
     async def _on_audio_at_practise(self, audio_message: AudioMessage, platform):
-        asr_result, pron_result = await self.asr.transcribe(audio_message.audio_data, platform, expected_text=self.practise_progress.get_current_practise())
+        asr_result, pron_result = await self.asr.transcribe(audio_message.audio_data, platform, expected_text=self.practise_progress.get_current_practise(), status=self.practise_progress.current_status)
         logger.info(f"asr_result: {asr_result}, pron_result: {pron_result}")
         if not asr_result:
             await self._on_asr_reg_error()

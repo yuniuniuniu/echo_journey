@@ -16,6 +16,13 @@ class CorrectBot():
         self.finals_oss_path = os.getenv("FINALS_OSS_PATH")
         self.initials_oss_path = os.getenv("INITIALS_OSS_PATH")
         self.success_score = 90
+        self.three_syllable_split_dict = self.init_three_syllable_split_info()
+        
+    def init_three_syllable_split_info(self):
+        import json
+        with open("echo_journey/services/bots/meta/three_syllable_split.json", "r") as f:
+            json_data = json.load(f)
+            return json_data
         
     def find_error(self, expected_messages, messages):
         result = {}
@@ -29,10 +36,27 @@ class CorrectBot():
                         key = f"声母 {expected_message.initial_consonant}"
                         result[key] = self.initials_oss_path + expected_message.initial_consonant + ".mp4"
                         
-                        
                     if expected_message.vowels != message.vowels and expected_message.vowels:
-                        key = f"韵母 {expected_message.vowels}"
-                        result[key] = self.finals_oss_path + expected_message.vowels + ".mp4"
+                        if expected_message.vowels in self.three_syllable_split_dict:
+                            if message.vowels and message.vowels in self.three_syllable_split_dict:
+                                exp_vowels0 = self.three_syllable_split_dict[expected_message.vowels][0]
+                                exp_vowels1 = self.three_syllable_split_dict[expected_message.vowels][1]
+                                vowels0 = self.three_syllable_split_dict[message.vowels][0]
+                                vowels1 = self.three_syllable_split_dict[message.vowels][1]
+                                if exp_vowels0 != vowels0:
+                                    key = f"韵母 {exp_vowels0}"
+                                    result[key] = self.finals_oss_path + exp_vowels0 + ".mp4"
+                                if exp_vowels1 != vowels1:
+                                    key = f"韵母 {exp_vowels1}"
+                                    result[key] = self.finals_oss_path + exp_vowels1 + ".mp4"
+                                
+                            else:
+                                for vowel in self.three_syllable_split_dict[expected_message.vowels]:
+                                    key = f"韵母 {vowel}"
+                                    result[key] = self.finals_oss_path + vowel + ".mp4"
+                        else:
+                            key = f"韵母 {expected_message.vowels}"
+                            result[key] = self.finals_oss_path + expected_message.vowels + ".mp4"
         except Exception as e:
             logger.error(f"error: {e}")
             logger.error(f"expected_messages: {expected_messages}")
