@@ -19,19 +19,24 @@ class CorrectBot():
         
     def find_error(self, expected_messages, messages):
         result = {}
-        for index, expected_message in enumerate(expected_messages):
-            if index >= len(messages):
-                break
-            else:
-                message = messages[index]
-                if expected_message.initial_consonant != message.initial_consonant:
-                    key = f"声母 {expected_message.initial_consonant}"
-                    result[key] = self.initials_oss_path + expected_message.initial_consonant + ".mp4"
-                    
-                    
-                if expected_message.vowels != message.vowels:
-                    key = f"韵母 {expected_message.vowels}"
-                    result[key] = self.finals_oss_path + expected_message.vowels + ".mp4"
+        try:
+            for index, expected_message in enumerate(expected_messages):
+                if index >= len(messages):
+                    break
+                else:
+                    message = messages[index]
+                    if expected_message.initial_consonant != message.initial_consonant and expected_message.initial_consonant:
+                        key = f"声母 {expected_message.initial_consonant}"
+                        result[key] = self.initials_oss_path + expected_message.initial_consonant + ".mp4"
+                        
+                        
+                    if expected_message.vowels != message.vowels and expected_message.vowels:
+                        key = f"韵母 {expected_message.vowels}"
+                        result[key] = self.finals_oss_path + expected_message.vowels + ".mp4"
+        except Exception as e:
+            logger.error(f"error: {e}")
+            logger.error(f"expected_messages: {expected_messages}")
+            logger.error(f"messages: {messages}")
         return result
             
     async def get_correct_result(self, expected_messages, messages):
