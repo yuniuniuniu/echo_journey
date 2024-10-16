@@ -78,7 +78,9 @@ class AzureAssessment(PronunciationAssseement, Singleton):
 
         speech_recognizer.start_continuous_recognition()
         while not done:
-            time.sleep(.5)
+            logger.info("pron assessment...")
+            import asyncio
+            await asyncio.sleep(.3)
 
         speech_recognizer.stop_continuous_recognition()
         return result
