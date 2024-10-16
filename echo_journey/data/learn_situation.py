@@ -72,12 +72,35 @@ class HistoryLearnSituation:
                                 result["finals"][word_msg.vowels] = []
                             result["finals"][word_msg.vowels].append([word_msg_list, audio_bytes])
         return result
+    
+    def build_unfamilier_finals_and_initials(self):
+        result = {"initials": {}, "finals": {}}
+        if not self.data:
+            return result
+        else:
+            latest_learn_situation = self.data[-1]
+            for _, word_2_wrong_pron_list in latest_learn_situation.scene_2_word_2_wrong_pron_list.items():
+                for word in word_2_wrong_pron_list.keys():
+                    word_msg_list = parse_pinyin(word)
+                    for word_msg in word_msg_list:
+                        if word_msg.initial_consonant:
+                            if word_msg.initial_consonant not in result["initials"]:
+                                result["initials"][word_msg.initial_consonant] = 0
+                            result["initials"][word_msg.initial_consonant] += 1
+                        if word_msg.vowels:
+                            if word_msg.vowels not in result["finals"]:
+                                result["finals"][word_msg.vowels] = 0
+                            result["finals"][word_msg.vowels] += 1
+            return result
                         
     def build_info(self):
         result = ""
         # 学生错误把XXX读成了YYY
         result_dict = {}
-        for scene, word_2_wrong_pron_list in self.data[0].scene_2_word_2_wrong_pron_list.items():
+        if not self.data:
+            return "暂无学习情况"
+
+        for scene, word_2_wrong_pron_list in self.data[-1].scene_2_word_2_wrong_pron_list.items():
             for word, wrong_pron_list in word_2_wrong_pron_list.items():
                 if word not in result_dict:
                     result_dict[word] = set()
