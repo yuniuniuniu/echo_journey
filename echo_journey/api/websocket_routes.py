@@ -5,6 +5,7 @@ from echo_journey.api.downward_protocol_handler import DownwardProtocolHandler
 from echo_journey.api.proto.upward_message_wrapper import unwrap_upward_message_from_bytes
 from echo_journey.api.proto.upward_pb2 import AudioMessage, StudentMessage
 from echo_journey.common.utils import get_connection_manager
+from echo_journey.data.learn_situation import HistoryLearnSituation
 from echo_journey.services.exercise_service import ExerciseService
 from echo_journey.services.talk_practise_service import TalkPractiseService
 from echo_journey.common.utils import session_id_var, device_id_var
@@ -26,6 +27,7 @@ async def websocket_error_practise(
     ws_msg_handler = DownwardProtocolHandler(websocket, manager)
     exercise_service = ExerciseService(ws_msg_handler)
     await exercise_service.initialize(platform)
+    HistoryLearnSituation().set_update_time()
         
     try:
         while True:

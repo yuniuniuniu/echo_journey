@@ -177,6 +177,12 @@ def parse_pinyin(text):
             yunmu = pinyin_wo_tone[1:]       
         else:
             yunmu = pinyin_wo_tone[len(shengmu):]
+        
+        if yunmu == "v":
+            yunmu = "ü"
+        
+        if yunmu == "ue":
+            yunmu = "üe"
             
         result.append(WordCorrectMessage(word=char, initial_consonant=shengmu, vowels=yunmu, tone=int(tone), pinyin=pretty_pinyin))
     return result

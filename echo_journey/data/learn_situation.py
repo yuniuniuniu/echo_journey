@@ -2,6 +2,7 @@ import json
 import logging
 import os
 import random
+import time
 
 from pypinyin import Style, pinyin
 from echo_journey.audio.text_to_speech.kanyun_tts import KanyunTTS
@@ -65,6 +66,7 @@ class HistoryLearnSituation:
         storage_dir = f"user_info/{device_id}/learn_situation"
         scene_2_timestamp_path = f"user_info/{device_id}/learn_situation/scene_2_timestamp.json"
         self.title_generate_context = WholeContext.generate_context_by_json(os.getenv("TitleBotPath"), "title_bot")
+        self.update_path = f"user_info/{device_id}/learn_situation/update.json"
 
         if os.path.exists(scene_2_timestamp_path):
             with open(scene_2_timestamp_path, 'r') as f:
@@ -84,11 +86,24 @@ class HistoryLearnSituation:
         result = []
         for root, dirs, files in os.walk(storage_dir):
             for file in files:
-                if file.endswith(".json") and not file.endswith("scene_2_timestamp.json"):
+                if file.endswith(".json") and not file.endswith("scene_2_timestamp.json") and not file.endswith("update.json"):
                     result.append(f"{storage_dir}/{file}")
         result = sorted(result)
         return result        
-                        
+
+    def set_update_time(self):
+        time_stamp = time.time()
+        with open(self.update_path, 'w') as f:
+            json.dump({"update_time": time_stamp}, f, ensure_ascii=False, indent=4)
+            
+    def get_update_time(self):
+        if os.path.exists(self.update_path):
+            with open(self.update_path, 'r') as f:
+                update_time = json.load(f)
+                return update_time.get("update_time", None)
+        else:
+            return None
+                      
     def _get_latest_practise_scene(self):
         latest_practise_scene = None
         latest_timestamp = -1
@@ -117,13 +132,31 @@ class HistoryLearnSituation:
         return result
     
     async def generate_title_info(self):
+        update_time = self.get_update_time()
+        latest_scene_time = self.get_latest_scene_time()
         latest_wrong_info = self.get_latest_wrong_info()
         if not latest_wrong_info:
             return "先去瓜瓜那里练练啊，等练完我赏你个大挑战", False
         else:
+            if latest_scene_time and update_time:
+                should_update = latest_scene_time > update_time
+            elif latest_scene_time:
+                should_update = True
+            elif update_time:
+                should_update = False
+            else:
+                should_update = False
+                
             self.title_generate_context.add_user_msg_to_cur({"role": "user", "content": latest_wrong_info})
             result = await self.title_generate_context.execute()
-            return result.get("talk", "奖励你一个大挑战？"), True
+            return result.get("talk", "奖励你一个大挑战？"), should_update
+        
+    def get_latest_scene_time(self):
+        scene =  self._get_latest_practise_scene()
+        if scene:
+            return self.scene_2_timestamp.get(scene, None)
+        else:
+            return None
     
     def get_latest_wrong_info(self):
         try:
