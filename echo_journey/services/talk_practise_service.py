@@ -34,7 +34,7 @@ class TalkPractiseService:
         self.status = ClassStatus.SCENE_GEN
     
     def on_ws_disconnect(self):
-        self.correct_bot.learn_situation.save()
+        pass
 
     async def _on_message_at_scene_gen(self, student_text, platform):
         logger.info(f"student_text: {student_text}")

@@ -5,6 +5,8 @@ from echo_journey.data.learn_situation import HistoryLearnSituation
 from echo_journey.data.whole_context import WholeContext
 import os
 from dotenv import find_dotenv, load_dotenv
+from echo_journey.common.utils import device_id_var
+import json
 _ = load_dotenv(find_dotenv())
 
 logger = logging.getLogger(__name__)
@@ -13,12 +15,12 @@ logger = logging.getLogger(__name__)
 class ExerciseBot():
     def __init__(self, ws_msg_handler):
         self.context = WholeContext.generate_context_by_json(os.getenv("ExerciseBotPath"), "exercise_bot")
+        self.title_generate_context = WholeContext.generate_context_by_json(os.getenv("TitleBotPath"), "title_bot")
         self.personal_context()
         self.ws_msg_handler = ws_msg_handler
         self.tts: KanyunTTS = KanyunTTS.get_instance()
         self.current_exercise = None
-        
-        
+            
     def personal_context(self):
         unfamilier_finals_and_initials = HistoryLearnSituation().build_unfamilier_finals_and_initials()
         unfamilier_initials_list = list(unfamilier_finals_and_initials["initials"].keys())
@@ -29,10 +31,8 @@ class ExerciseBot():
         self.context.cur_visible_assistant.content.system_prompt = self.context.cur_visible_assistant.content.system_prompt.replace("""{finals}""", unfamilier_finals_str)
         
     async def send_treating_msg(self, treating_msg, platform):
-        self.context.add_user_msg_to_cur({"role": "assistant", "content": "treating_msg"})
-        await self.ws_msg_handler.send_tutor_message(text=treating_msg)
-        # user_input = ""
-        # await self.send_practise_msg(user_input, platform)        
+        self.context.add_user_msg_to_cur({"role": "assistant", "content": treating_msg})
+        await self.ws_msg_handler.send_tutor_message(text=treating_msg)   
         
     def build_input_by(self, student_text):
         format_dict = {}
