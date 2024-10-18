@@ -1,10 +1,16 @@
 import json
+import logging
 import os
+import random
 
 from pypinyin import Style, pinyin
 from echo_journey.audio.text_to_speech.kanyun_tts import KanyunTTS
-from echo_journey.common.utils import chinese_to_pinyin, device_id_var, parse_pinyin
+from echo_journey.common.utils import chinese_to_pinyin, device_id_var, generate_diff, parse_pinyin
 from datetime import datetime
+
+from echo_journey.data.whole_context import WholeContext
+
+logger = logging.getLogger(__name__)
 
 class LearnSituation:
     def __init__(self):
@@ -12,11 +18,17 @@ class LearnSituation:
         current_datetime = datetime.now()
         current_date_str = current_datetime.strftime('%Y-%m-%d')
         self.save_path = f"user_info/{device_id}/learn_situation/{current_date_str}.json"
+        self.scene_2_timestamp_save_path = f"user_info/{device_id}/learn_situation/scene_2_timestamp.json"
         if os.path.exists(self.save_path):
             with open(self.save_path, 'r') as f:
                 self.scene_2_word_2_wrong_pron_list = json.load(f)
         else:
             self.scene_2_word_2_wrong_pron_list = {}   
+        if os.path.exists(self.scene_2_timestamp_save_path): 
+            with open(self.scene_2_timestamp_save_path, 'r') as f:
+                self.scene_2_timestamp = json.load(f)
+        else:
+            self.scene_2_timestamp = {}
             
     @classmethod
     def read_from(self, path):
@@ -33,6 +45,9 @@ class LearnSituation:
         self.scene_2_word_2_wrong_pron_list[scene] = self.scene_2_word_2_wrong_pron_list.get(scene, {})
         self.scene_2_word_2_wrong_pron_list[scene][word] = self.scene_2_word_2_wrong_pron_list[scene].get(word, [])
         self.scene_2_word_2_wrong_pron_list[scene][word].append(pron)
+        import time
+        self.scene_2_timestamp[scene] =  time.time()
+        self.save()
         
     def save(self):
         directory = os.path.dirname(self.save_path)
@@ -40,21 +55,49 @@ class LearnSituation:
             os.makedirs(directory)
         with open(self.save_path, 'w') as f:
             json.dump(self.scene_2_word_2_wrong_pron_list, f, ensure_ascii=False, indent=4)
+        with open(self.scene_2_timestamp_save_path, 'w') as f:
+            json.dump(self.scene_2_timestamp, f, ensure_ascii=False, indent=4)
     
 
 class HistoryLearnSituation:
     def __init__(self):
         device_id = device_id_var.get()
         storage_dir = f"user_info/{device_id}/learn_situation"
+        scene_2_timestamp_path = f"user_info/{device_id}/learn_situation/scene_2_timestamp.json"
+        self.title_generate_context = WholeContext.generate_context_by_json(os.getenv("TitleBotPath"), "title_bot")
+
+        if os.path.exists(scene_2_timestamp_path):
+            with open(scene_2_timestamp_path, 'r') as f:
+                self.scene_2_timestamp = json.load(f)
+        else:
+            self.scene_2_timestamp = {}
+        
         self.data: list[LearnSituation] = []
         self.tts: KanyunTTS = KanyunTTS.get_instance()
+        files = self._get_all_files(storage_dir)
+        for file_path in files:
+            with open(file_path, 'r') as f:
+                learn_situation = LearnSituation.read_from(file_path)
+                self.data.append(learn_situation)
+    
+    def _get_all_files(self, storage_dir):
+        result = []
         for root, dirs, files in os.walk(storage_dir):
             for file in files:
-                if file.endswith(".json"):
-                    with open(f"{storage_dir}/{file}", 'r') as f:
-                        learn_situation = LearnSituation.read_from(f"{storage_dir}/{file}")
-                        self.data.append(learn_situation)
+                if file.endswith(".json") and not file.endswith("scene_2_timestamp.json"):
+                    result.append(f"{storage_dir}/{file}")
+        result = sorted(result)
+        return result        
                         
+    def _get_latest_practise_scene(self):
+        latest_practise_scene = None
+        latest_timestamp = -1
+        for scene, timestamp in self.scene_2_timestamp.items():
+            if timestamp > latest_timestamp:
+                latest_practise_scene = scene
+                latest_timestamp = timestamp
+        return latest_practise_scene
+                                                
     def build_wrong_pronunciation_book(self, platform):
         result = {"initials": {}, "finals": {}}
         for learn_situation in self.data:
@@ -72,6 +115,40 @@ class HistoryLearnSituation:
                                 result["finals"][word_msg.vowels] = []
                             result["finals"][word_msg.vowels].append([word_msg_list, audio_bytes])
         return result
+    
+    async def generate_title_info(self):
+        latest_wrong_info = self.get_latest_wrong_info()
+        if not latest_wrong_info:
+            return "先去瓜瓜那里练练啊，等练完我赏你个大挑战", False
+        else:
+            self.title_generate_context.add_user_msg_to_cur({"role": "user", "content": latest_wrong_info})
+            result = await self.title_generate_context.execute()
+            return result.get("talk", "奖励你一个大挑战？"), True
+    
+    def get_latest_wrong_info(self):
+        try:
+            scene = self._get_latest_practise_scene()
+            latest_learn_situation = self.data[-1]
+            random_result = []
+
+            if scene in latest_learn_situation.scene_2_word_2_wrong_pron_list:
+                word_2_wrong_pron_list = latest_learn_situation.scene_2_word_2_wrong_pron_list[scene]
+                for word, wrong_pron_list in word_2_wrong_pron_list.items():
+                    for wrong_pron in wrong_pron_list:
+                        diff_list = generate_diff(word, wrong_pron)
+                        random_result.extend(diff_list)
+                if len(random_result) > 1:
+                    index = random.randint(0, len(random_result)-1)
+                elif len(random_result) == 1:
+                    index = 0
+                else:
+                    return None
+                return random_result[index]
+            else:
+                return None
+        except Exception as e:
+            logger.exception(f"get_latest_unfamilier_info error: {e}")
+            return None
     
     def build_unfamilier_finals_and_initials(self):
         result = {"initials": {}, "finals": {}}

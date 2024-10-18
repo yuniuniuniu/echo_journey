@@ -137,6 +137,24 @@ def chinese_to_pinyin(text, style=Style.TONE, delimiter=' '):
     pinyin_str = delimiter.join([''.join(item) for item in pinyin_list])
     return pinyin_str
 
+def generate_diff(expected_pinyin, student_pinyin):
+    try:
+        expected = parse_pinyin(expected_pinyin)
+        student = parse_pinyin(student_pinyin)
+        diff_list = []
+        for index, word in enumerate(expected):
+            if index >= len(student):
+                break
+            else:
+                if word.initial_consonant != student[index].initial_consonant:
+                    diff_list.append("学生把声母{}读成了{}".format(word.initial_consonant, student[index].initial_consonant))
+                if word.vowels != student[index].vowels:
+                    diff_list.append("学生把韵母{}读成了{}".format(word.vowels, student[index].vowels))
+        return diff_list
+    except Exception as e:
+        logger.exception(f"generate_diff error: {e}")
+        return []
+
 def parse_pinyin(text):
     result = []
     text = text.replace(",", "").replace("，", "").replace("。", "").replace(".", "").replace("？", "").replace("！", "").replace("；", "").replace("：", "").replace("、", "").replace(" ", "").replace("\n", "").replace("\t", "").replace("\r", "").replace("“", "").replace("”", "").replace("‘", "").replace("’", "").replace("（", "").replace("）", "").replace("《", "").replace("》", "").replace("【", "").replace("】", "").replace("—", "").replace("…", "").replace("·", "").replace("「", "").replace("」", "").replace("『", "").replace("』", "").replace("〈", "").replace("〉", "")
