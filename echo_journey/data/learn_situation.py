@@ -157,7 +157,35 @@ class HistoryLearnSituation:
             return self.scene_2_timestamp.get(scene, None)
         else:
             return None
-    
+        
+    def build_miss_related_set(self):
+        result_set = set()
+        if not self.data:
+            return result_set
+        
+        def is_legal(text):
+            for c in text:
+                if "." in c or "。" in c or "，" in c or "!" in "c" or "?" in c:
+                    return False
+                
+            return True
+        for scene, word_2_wrong_pron_list in self.data[-1].scene_2_word_2_wrong_pron_list.items():
+            for expected_word, wrong_pron_list in word_2_wrong_pron_list.items():
+                for wrong_pron in wrong_pron_list:
+                    if is_legal(wrong_pron):
+                        word_msg_list = parse_pinyin(expected_word)
+                        wrong_pron_msg_list = parse_pinyin(wrong_pron)
+                        for index, word in enumerate(word_msg_list):
+                            if len(wrong_pron_msg_list) > index and word != wrong_pron_msg_list[index]:
+                                if word.initial_consonant != wrong_pron_msg_list[index].initial_consonant:
+                                    result_set.add(word.initial_consonant)
+                                    result_set.add(wrong_pron_msg_list[index].initial_consonant)
+                                if word.vowels != wrong_pron_msg_list[index].vowels:
+                                    result_set.add(word.vowels)
+                                    result_set.add(wrong_pron_msg_list[index].vowels)
+        return result_set
+                            
+
     def get_latest_wrong_info(self):
         try:
             scene = self._get_latest_practise_scene()
