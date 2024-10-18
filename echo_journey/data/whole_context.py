@@ -181,9 +181,14 @@ class WholeContext():
     async def _async_commit_to_llm(
         self, assistant_meta: AssistantMeta, messages: list[dict]
     ):
+        temperature = 0
+        if assistant_meta.assistant_name == "scene_generate_bot":
+            print("scene_generate_bot")
+            temperature = 0.5
         async for delta, is_restart_commit in self.llm.acommit(
             messages,
             json_mode=assistant_meta.content.json_mode,
+            temperature = temperature,
         ):
             yield delta, is_restart_commit
 
