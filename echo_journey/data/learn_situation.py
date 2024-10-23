@@ -93,6 +93,8 @@ class HistoryLearnSituation:
 
     def set_update_time(self):
         time_stamp = time.time()
+        os.makedirs(os.path.dirname(self.update_path), exist_ok=True)
+
         with open(self.update_path, 'w') as f:
             json.dump({"update_time": time_stamp}, f, ensure_ascii=False, indent=4)
             
@@ -187,6 +189,8 @@ class HistoryLearnSituation:
                             
 
     def get_latest_wrong_info(self):
+        if len(self.data) < 1:
+            return None
         try:
             scene = self._get_latest_practise_scene()
             latest_learn_situation = self.data[-1]

@@ -35,7 +35,7 @@ class KanyunTTS(Singleton, TextToSpeech):
             app_id="math-tutor",
             user_id="math-tutor-lab",
             language="zh-CN",
-            speed_ratio=0.7,
+            speed_ratio=0.5,
         )
         tts_response = self.client.tts(tts_request)
         audio_bytes = bytes.fromhex(tts_response.audio.audio_bytes)
@@ -45,6 +45,7 @@ class KanyunTTS(Singleton, TextToSpeech):
         audio_segment = audio_segment.set_channels(1)       # Mono
 
         output_io = io.BytesIO()
+
         if platform == "ios" or platform == "android":
             audio_segment.export(output_io, format="ipod")
         elif platform == "web" or platform == "web-android":

@@ -1,4 +1,5 @@
 import logging
+from echo_journey.audio.text_to_speech.azure_tts import AzureTTS
 from echo_journey.audio.text_to_speech.kanyun_tts import KanyunTTS
 from echo_journey.common.utils import parse_pinyin
 from echo_journey.data.learn_situation import HistoryLearnSituation
@@ -19,6 +20,7 @@ class ExerciseBot():
         self.personal_context()
         self.ws_msg_handler = ws_msg_handler
         self.tts: KanyunTTS = KanyunTTS.get_instance()
+        # self.tts: AzureTTS = AzureTTS.get_instance()
         self.current_exercise = None
             
     def personal_context(self):
