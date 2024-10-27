@@ -37,13 +37,16 @@ class ExerciseService:
         await self.ws_msg_handler.send_tutor_message(text="对不起，我没有听清楚，请再说一遍")
             
     def replace_pinyin_if_same(self, messages: list[WordCorrectMessage], expected_messages: list[WordCorrectMessage]):
-        if len(messages) != len(expected_messages):
-            return messages, expected_messages
-        else:
-            for i in range(len(messages)):
-                if messages[i].pinyin == expected_messages[i].pinyin:
-                    messages[i] = copy.deepcopy(expected_messages[i])
-            return messages, expected_messages
+        # if len(messages) != len(expected_messages):
+        #     return messages, expected_messages
+        # else:
+        for i in range(len(messages)):
+            if messages[i].pinyin == expected_messages[i].pinyin:
+                messages[i] = copy.deepcopy(expected_messages[i])
+                continue
+            if messages[i].word == expected_messages[i].word:
+                messages[i] = copy.deepcopy(expected_messages[i])
+        return messages, expected_messages
             
     async def _on_audio_at_practise(self, audio_message: AudioMessage, platform):
         asr_result, pron_result = await self.asr.transcribe(audio_message.audio_data, platform, self.exercise_bot.current_exercise)

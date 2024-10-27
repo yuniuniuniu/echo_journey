@@ -66,6 +66,7 @@ class CorrectBot():
     async def get_correct_result(self, expected_messages, messages):
         format_dict = self.format_correct_bot_input(expected_messages, messages)
         user_msg = self.context.cur_visible_assistant.content.user_prompt_prefix.format(**format_dict)
+        logger.info(f"correct bot user_msg: {user_msg}")
         self.context.add_user_msg_to_cur({"role": "user", "content": user_msg})
         result =  await self.context.execute()
         suggestions = ""

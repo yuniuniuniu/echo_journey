@@ -10,6 +10,9 @@ from echo_journey.api.proto.downward_pb2 import WordCorrectMessage
 import logging
 
 import contextvars
+
+from echo_journey.data.pinyin_parser import PinyinParser
+
 logger = logging.getLogger(__name__)
 session_id_var = contextvars.ContextVar("session_id", default="N/A")
 device_id_var = contextvars.ContextVar("device_id", default="N/A")
@@ -156,41 +159,12 @@ def generate_diff(expected_pinyin, student_pinyin):
         return []
 
 def parse_pinyin(text):
-    result = []
     try:
-        text = text.replace(",", "").replace("，", "").replace("。", "").replace(".", "").replace("？", "").replace("！", "").replace("；", "").replace("：", "").replace("、", "").replace(" ", "").replace("\n", "").replace("\t", "").replace("\r", "").replace("“", "").replace("”", "").replace("‘", "").replace("’", "").replace("（", "").replace("）", "").replace("《", "").replace("》", "").replace("【", "").replace("】", "").replace("—", "").replace("…", "").replace("·", "").replace("「", "").replace("」", "").replace("『", "").replace("』", "").replace("〈", "").replace("〉", "")
+        result = PinyinParser.parse_pinyin(text)
     except Exception as e:
         logger.exception(f"parse_pinyin error: {e}")
-        return result
-    
-    pinyin_list = lazy_pinyin(text, style=Style.TONE3, neutral_tone_with_five=True)
-    shengmu_list = lazy_pinyin(text, style=Style.INITIALS)   
-
-    for i, char in enumerate(text):
-        pinyin = pinyin_list[i]
-        shengmu = shengmu_list[i]
-        pretty_pinyin=chinese_to_pinyin(char)
-        pinyin_wo_tone = chinese_to_pinyin(char, Style.NORMAL)
-        
-        if len(pinyin) > 0 and pinyin[-1].isdigit():
-            tone = pinyin[-1]
-        else:
-            tone = '5'
-            
-        if not shengmu and len(pinyin_wo_tone) > 0 and pinyin_wo_tone[0] in {'y', 'w'}:
-            yunmu = pinyin_wo_tone[1:]       
-        else:
-            yunmu = pinyin_wo_tone[len(shengmu):]
-        
-        if yunmu == "v":
-            yunmu = "ü"
-        
-        if yunmu == "ue":
-            yunmu = "üe"
-            
-        result.append(WordCorrectMessage(word=char, initial_consonant=shengmu, vowels=yunmu, tone=int(tone), pinyin=pretty_pinyin))
+        return []
     return result
-
 
 import uuid
 
