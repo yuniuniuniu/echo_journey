@@ -88,13 +88,15 @@ class TalkPractiseService:
             await self._on_message_at_scene_gen(asr_result, platform) 
             
     def replace_pinyin_if_same(self, messages: list[WordCorrectMessage], expected_messages: list[WordCorrectMessage]):
-        if len(messages) != len(expected_messages):
-            return messages, expected_messages
-        else:
-            for i in range(len(messages)):
-                if messages[i].pinyin == expected_messages[i].pinyin:
-                    messages[i] = copy.deepcopy(expected_messages[i])
-            return messages, expected_messages
+        for i in range(len(messages)):
+            if i >= len(expected_messages):
+                break
+            if messages[i].pinyin == expected_messages[i].pinyin:
+                messages[i] = copy.deepcopy(expected_messages[i])
+                continue
+            if messages[i].word == expected_messages[i].word:
+                messages[i] = copy.deepcopy(expected_messages[i])
+        return messages, expected_messages
             
     async def _on_audio_at_practise(self, audio_message: AudioMessage, platform):
         asr_result, pron_result = await self.asr.transcribe(audio_message.audio_data, platform, expected_text=self.practise_progress.get_current_practise(), status=self.practise_progress.current_status)

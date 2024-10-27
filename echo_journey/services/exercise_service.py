@@ -41,6 +41,8 @@ class ExerciseService:
         #     return messages, expected_messages
         # else:
         for i in range(len(messages)):
+            if i >= len(expected_messages):
+                break
             if messages[i].pinyin == expected_messages[i].pinyin:
                 messages[i] = copy.deepcopy(expected_messages[i])
                 continue
