@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+package echo_journey.common;
+import "downward.proto";
+
+// 发音评估结果
+message PronunciationAssessment {
+    string word = 1;
+    string initial_consonant = 2;
+    string vowels = 3;
+    int32 tone = 4;
+    string pinyin = 5;
+}
+
+// 示范视频信息
+message DemonstrationVideo {
+    string video_url = 1;
+    string description = 2;
+}
+
+// 学生消息
+message StudentMessage {
+    string text = 1;
+    bytes audio_data = 2;
+    int64 timestamp = 3;  // 添加时间戳
+}
+
+// 教师消息
+message TeacherMessage {
+    string text = 1;
+    bytes audio = 2;
+    repeated PronunciationAssessment expected_pronunciations = 3;
+    repeated PronunciationAssessment actual_pronunciations = 4;
+    string feedback = 5;                    // 改名为更清晰的feedback
+    float pronunciation_score = 6;          // 更明确的命名
+    float fluency_score = 7;
+    repeated DemonstrationVideo demos = 8;  // 更清晰的命名
+}
+
+// 聊天记录
+message ChatRecord {
+    // 定义消息类型枚举
+    enum ChatType {
+        MESSAGE_TYPE_UNSPECIFIED = 0;  // 使用更规范的未指定枚举命名
+        MESSAGE_TYPE_STUDENT = 1;      // 学生消息
+        MESSAGE_TYPE_TEACHER = 2;      // 教师消息
+    }
+    ChatType type = 1;
+    bytes payload = 2;
+}
+
+// 历史记录视图
+message ChatHistory {
+    repeated ChatRecord records = 1;
+}
