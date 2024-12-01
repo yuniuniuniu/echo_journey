@@ -16,8 +16,8 @@ class TalkPractiseBot():
         self.context = WholeContext.generate_context_by_json(os.getenv("TalkPractiseBotPath"), "talk_practise_bot")
         self.practise_progress: PractiseProgress = practise_progress
         self.ws_msg_handler = ws_msg_handler
-        # self.tts: AzureTTS = AzureTTS.get_instance()
-        self.tts: KanyunTTS = KanyunTTS.get_instance()
+        self.tts: AzureTTS = AzureTTS.get_instance()
+        # self.tts: KanyunTTS = KanyunTTS.get_instance()
         
     async def send_treating_msg(self):
         import json

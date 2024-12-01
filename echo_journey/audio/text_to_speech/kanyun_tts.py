@@ -35,7 +35,7 @@ class KanyunTTS(Singleton, TextToSpeech):
             app_id="math-tutor",
             user_id="math-tutor-lab",
             language="zh-CN",
-            speed_ratio=0.5,
+            speed_ratio=0.8,
         )
         tts_response = self.client.tts(tts_request)
         audio_bytes = bytes.fromhex(tts_response.audio.audio_bytes)

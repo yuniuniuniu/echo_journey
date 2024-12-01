@@ -19,8 +19,8 @@ class ExerciseBot():
         self.title_generate_context = WholeContext.generate_context_by_json(os.getenv("TitleBotPath"), "title_bot")
         self.personal_context()
         self.ws_msg_handler = ws_msg_handler
-        self.tts: KanyunTTS = KanyunTTS.get_instance()
-        # self.tts: AzureTTS = AzureTTS.get_instance()
+        # self.tts: KanyunTTS = KanyunTTS.get_instance()
+        self.tts: AzureTTS = AzureTTS.get_instance()
         self.current_exercise = None
             
     def personal_context(self):

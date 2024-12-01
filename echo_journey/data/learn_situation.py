@@ -5,6 +5,7 @@ import random
 import time
 
 from pypinyin import Style, pinyin
+from echo_journey.audio.text_to_speech.azure_tts import AzureTTS
 from echo_journey.audio.text_to_speech.kanyun_tts import KanyunTTS
 from echo_journey.common.utils import chinese_to_pinyin, device_id_var, generate_diff, parse_pinyin
 from datetime import datetime
@@ -75,7 +76,8 @@ class HistoryLearnSituation:
             self.scene_2_timestamp = {}
         
         self.data: list[LearnSituation] = []
-        self.tts: KanyunTTS = KanyunTTS.get_instance()
+        # self.tts: KanyunTTS = KanyunTTS.get_instance()
+        self.tts: AzureTTS = AzureTTS.get_instance()
         files = self._get_all_files(storage_dir)
         for file_path in files:
             with open(file_path, 'r') as f:

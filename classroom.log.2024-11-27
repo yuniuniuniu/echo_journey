@@ -1,0 +1,127 @@
+2024-11-27 13:33:01 - log_info - util.py - INFO - message='OpenAI API response' path=https://openai.yuanfudao.com/gpt-api/azure//openai/deployments/gpt-4/chat/completions?api-version=2024-02-15-preview processing_ms=None request_id=None response_code=200 - N/A
+2024-11-27 13:33:03 - log_info - util.py - INFO - message='OpenAI API response' path=https://openai.yuanfudao.com/gpt-api/azure//openai/deployments/gpt-4/chat/completions?api-version=2024-02-15-preview processing_ms=None request_id=None response_code=200 - f28f09e6-7a01-47a7-ad13-0a070dfd3716
+2024-11-27 13:33:20 - build_input_by - exercise_bot.py - INFO - format_dict: {'STUDENT': '随机给出一句日常生活'} - f28f09e6-7a01-47a7-ad13-0a070dfd3716
+2024-11-27 13:33:21 - log_info - util.py - INFO - message='OpenAI API response' path=https://openai.yuanfudao.com/gpt-api/azure//openai/deployments/gpt-4/chat/completions?api-version=2024-02-15-preview processing_ms=None request_id=None response_code=200 - f28f09e6-7a01-47a7-ad13-0a070dfd3716
+2024-11-27 13:33:24 - tts_sync - azure_tts.py - INFO - Speech synthesized for text [你好] - N/A
+2024-11-27 13:33:36 - disconnect - utils.py - INFO - Client #140281860174096 left the chat - f28f09e6-7a01-47a7-ad13-0a070dfd3716
+2024-11-27 14:09:52 - log_info - util.py - INFO - message='OpenAI API response' path=https://openai.yuanfudao.com/gpt-api/azure//openai/deployments/gpt-4/chat/completions?api-version=2024-02-15-preview processing_ms=None request_id=None response_code=200 - d18cfaa4-deff-4ffa-a470-8044c8d06ccb
+2024-11-27 14:09:59 - build_input_by - exercise_bot.py - INFO - format_dict: {'STUDENT': '当然'} - d18cfaa4-deff-4ffa-a470-8044c8d06ccb
+2024-11-27 14:10:00 - log_info - util.py - INFO - message='OpenAI API response' path=https://openai.yuanfudao.com/gpt-api/azure//openai/deployments/gpt-4/chat/completions?api-version=2024-02-15-preview processing_ms=None request_id=None response_code=200 - d18cfaa4-deff-4ffa-a470-8044c8d06ccb
+2024-11-27 14:10:04 - tts_sync - azure_tts.py - INFO - Speech synthesized for text [你好] - N/A
+2024-11-27 14:10:08 - transcribe - kanyun.py - INFO - Kanyun transcript is: 你好 - d18cfaa4-deff-4ffa-a470-8044c8d06ccb
+2024-11-27 14:10:08 - _on_audio_at_practise - exercise_service.py - INFO - asr_result: 你好, pron_result: None - d18cfaa4-deff-4ffa-a470-8044c8d06ccb
+2024-11-27 14:10:08 - get_correct_result - exercise_correct_bot.py - INFO - exercise correct bot user_msg: 预期答案: 你nǐ3好hǎo3
+听障同学读出来的答案: 你nǐ3好hǎo3 - d18cfaa4-deff-4ffa-a470-8044c8d06ccb
+2024-11-27 14:10:08 - log_info - util.py - INFO - message='OpenAI API response' path=https://openai.yuanfudao.com/gpt-api/azure//openai/deployments/gpt-4/chat/completions?api-version=2024-02-15-preview processing_ms=None request_id=None response_code=200 - d18cfaa4-deff-4ffa-a470-8044c8d06ccb
+2024-11-27 14:10:09 - get_correct_result - exercise_correct_bot.py - INFO - exercise correct bot result: {'problem': None, 'score': 100, 'suggestion_dict': {}, 'change_scene': False} - d18cfaa4-deff-4ffa-a470-8044c8d06ccb
+2024-11-27 14:10:09 - get_correct_result - exercise_correct_bot.py - INFO - {'problem': None, 'score': 100, 'suggestion_dict': {}, 'change_scene': False} - d18cfaa4-deff-4ffa-a470-8044c8d06ccb
+2024-11-27 14:10:09 - build_input_by - exercise_bot.py - INFO - format_dict: {'STUDENT': '学生已经会读你好了'} - d18cfaa4-deff-4ffa-a470-8044c8d06ccb
+2024-11-27 14:10:09 - log_info - util.py - INFO - message='OpenAI API response' path=https://openai.yuanfudao.com/gpt-api/azure//openai/deployments/gpt-4/chat/completions?api-version=2024-02-15-preview processing_ms=None request_id=None response_code=200 - d18cfaa4-deff-4ffa-a470-8044c8d06ccb
+2024-11-27 14:10:11 - tts_sync - azure_tts.py - INFO - Speech synthesized for text [谢谢] - N/A
+2024-11-27 14:10:16 - disconnect - utils.py - INFO - Client #140281916142464 left the chat - d18cfaa4-deff-4ffa-a470-8044c8d06ccb
+2024-11-27 14:16:06 - disconnect - utils.py - INFO - Client #140281839275088 left the chat - 2ea1f077-00f9-464f-a141-ceb38a91106e
+2024-11-28 12:55:34 - log_info - util.py - INFO - message='OpenAI API response' path=https://openai.yuanfudao.com/gpt-api/azure//openai/deployments/gpt-4/chat/completions?api-version=2024-02-15-preview processing_ms=None request_id=None response_code=200 - d1ea6e19-5de4-4100-b0fb-f4156a2989a5
+2024-11-28 12:55:45 - build_input_by - exercise_bot.py - INFO - format_dict: {'STUDENT': '好'} - d1ea6e19-5de4-4100-b0fb-f4156a2989a5
+2024-11-28 12:55:45 - log_info - util.py - INFO - message='OpenAI API response' path=https://openai.yuanfudao.com/gpt-api/azure//openai/deployments/gpt-4/chat/completions?api-version=2024-02-15-preview processing_ms=None request_id=None response_code=200 - d1ea6e19-5de4-4100-b0fb-f4156a2989a5
+2024-11-28 12:55:49 - tts_sync - azure_tts.py - INFO - Speech synthesized for text [你好] - N/A
+2024-11-28 12:57:25 - log_info - util.py - INFO - message='OpenAI API response' path=https://openai.yuanfudao.com/gpt-api/azure//openai/deployments/gpt-4/chat/completions?api-version=2024-02-15-preview processing_ms=None request_id=None response_code=200 - d94a417d-9147-41bc-be00-548ab114ac70
+2024-11-28 12:57:29 - build_input_by - exercise_bot.py - INFO - format_dict: {'STUDENT': '好'} - d94a417d-9147-41bc-be00-548ab114ac70
+2024-11-28 12:57:29 - log_info - util.py - INFO - message='OpenAI API response' path=https://openai.yuanfudao.com/gpt-api/azure//openai/deployments/gpt-4/chat/completions?api-version=2024-02-15-preview processing_ms=None request_id=None response_code=200 - d94a417d-9147-41bc-be00-548ab114ac70
+2024-11-28 12:57:32 - tts_sync - azure_tts.py - INFO - Speech synthesized for text [你好] - N/A
+2024-11-28 12:57:46 - disconnect - utils.py - INFO - Client #140281839274272 left the chat - d1ea6e19-5de4-4100-b0fb-f4156a2989a5
+2024-11-28 12:58:03 - log_info - util.py - INFO - message='OpenAI API response' path=https://openai.yuanfudao.com/gpt-api/azure//openai/deployments/gpt-4/chat/completions?api-version=2024-02-15-preview processing_ms=None request_id=None response_code=200 - 7d3c74ec-0933-4e85-a148-0cc5f8f164bf
+2024-11-28 12:58:07 - transcribe - kanyun.py - INFO - Kanyun transcript is: 汉 - 7d3c74ec-0933-4e85-a148-0cc5f8f164bf
+2024-11-28 12:58:07 - _on_audio_at_practise - exercise_service.py - INFO - asr_result: 汉, pron_result: None - 7d3c74ec-0933-4e85-a148-0cc5f8f164bf
+2024-11-28 12:58:07 - build_input_by - exercise_bot.py - INFO - format_dict: {'STUDENT': '汉'} - 7d3c74ec-0933-4e85-a148-0cc5f8f164bf
+2024-11-28 12:58:08 - log_info - util.py - INFO - message='OpenAI API response' path=https://openai.yuanfudao.com/gpt-api/azure//openai/deployments/gpt-4/chat/completions?api-version=2024-02-15-preview processing_ms=None request_id=None response_code=200 - 7d3c74ec-0933-4e85-a148-0cc5f8f164bf
+2024-11-28 12:58:10 - tts_sync - azure_tts.py - INFO - Speech synthesized for text [汉字] - N/A
+2024-11-28 12:58:24 - transcribe - kanyun.py - INFO - Kanyun transcript is: 汉字 - 7d3c74ec-0933-4e85-a148-0cc5f8f164bf
+2024-11-28 12:58:24 - _on_audio_at_practise - exercise_service.py - INFO - asr_result: 汉字, pron_result: None - 7d3c74ec-0933-4e85-a148-0cc5f8f164bf
+2024-11-28 12:58:24 - get_correct_result - exercise_correct_bot.py - INFO - exercise correct bot user_msg: 预期答案: 汉hàn4字zì4
+听障同学读出来的答案: 汉hàn4字zì4 - 7d3c74ec-0933-4e85-a148-0cc5f8f164bf
+2024-11-28 12:58:24 - log_info - util.py - INFO - message='OpenAI API response' path=https://openai.yuanfudao.com/gpt-api/azure//openai/deployments/gpt-4/chat/completions?api-version=2024-02-15-preview processing_ms=None request_id=None response_code=200 - 7d3c74ec-0933-4e85-a148-0cc5f8f164bf
+2024-11-28 12:58:24 - get_correct_result - exercise_correct_bot.py - INFO - exercise correct bot result: {'problem': None, 'score': 100, 'suggestion_dict': {}, 'change_scene': False} - 7d3c74ec-0933-4e85-a148-0cc5f8f164bf
+2024-11-28 12:58:24 - get_correct_result - exercise_correct_bot.py - INFO - {'problem': None, 'score': 100, 'suggestion_dict': {}, 'change_scene': False} - 7d3c74ec-0933-4e85-a148-0cc5f8f164bf
+2024-11-28 12:58:24 - build_input_by - exercise_bot.py - INFO - format_dict: {'STUDENT': '学生已经会读汉字了'} - 7d3c74ec-0933-4e85-a148-0cc5f8f164bf
+2024-11-28 12:58:25 - log_info - util.py - INFO - message='OpenAI API response' path=https://openai.yuanfudao.com/gpt-api/azure//openai/deployments/gpt-4/chat/completions?api-version=2024-02-15-preview processing_ms=None request_id=None response_code=200 - 7d3c74ec-0933-4e85-a148-0cc5f8f164bf
+2024-11-28 12:58:28 - tts_sync - azure_tts.py - INFO - Speech synthesized for text [学习] - N/A
+2024-11-28 12:58:39 - disconnect - utils.py - INFO - Client #140281839601088 left the chat - d94a417d-9147-41bc-be00-548ab114ac70
+2024-11-28 13:00:04 - disconnect - utils.py - INFO - Client #140281860074928 left the chat - 7d3c74ec-0933-4e85-a148-0cc5f8f164bf
+2024-11-28 13:01:21 - log_info - util.py - INFO - message='OpenAI API response' path=https://openai.yuanfudao.com/gpt-api/azure//openai/deployments/gpt-4/chat/completions?api-version=2024-02-15-preview processing_ms=None request_id=None response_code=200 - 09237201-06ff-4963-a44d-9f9f1f2993e1
+2024-11-28 13:01:25 - transcribe - kanyun.py - INFO - Kanyun transcript is: Home - 09237201-06ff-4963-a44d-9f9f1f2993e1
+2024-11-28 13:01:25 - _on_audio_at_practise - exercise_service.py - INFO - asr_result: Home, pron_result: None - 09237201-06ff-4963-a44d-9f9f1f2993e1
+2024-11-28 13:01:25 - build_input_by - exercise_bot.py - INFO - format_dict: {'STUDENT': 'Home'} - 09237201-06ff-4963-a44d-9f9f1f2993e1
+2024-11-28 13:01:26 - log_info - util.py - INFO - message='OpenAI API response' path=https://openai.yuanfudao.com/gpt-api/azure//openai/deployments/gpt-4/chat/completions?api-version=2024-02-15-preview processing_ms=None request_id=None response_code=200 - 09237201-06ff-4963-a44d-9f9f1f2993e1
+2024-11-28 13:01:31 - transcribe - kanyun.py - INFO - Kanyun transcript is: 嗯。 - 09237201-06ff-4963-a44d-9f9f1f2993e1
+2024-11-28 13:01:31 - _on_audio_at_practise - exercise_service.py - INFO - asr_result: 嗯。, pron_result: None - 09237201-06ff-4963-a44d-9f9f1f2993e1
+2024-11-28 13:01:31 - build_input_by - exercise_bot.py - INFO - format_dict: {'STUDENT': '嗯。'} - 09237201-06ff-4963-a44d-9f9f1f2993e1
+2024-11-28 13:01:31 - log_info - util.py - INFO - message='OpenAI API response' path=https://openai.yuanfudao.com/gpt-api/azure//openai/deployments/gpt-4/chat/completions?api-version=2024-02-15-preview processing_ms=None request_id=None response_code=200 - 09237201-06ff-4963-a44d-9f9f1f2993e1
+2024-11-28 13:01:34 - tts_sync - azure_tts.py - INFO - Speech synthesized for text [你好] - N/A
+2024-11-28 13:01:42 - transcribe - kanyun.py - INFO - Kanyun transcript is: 嗯好。 - 09237201-06ff-4963-a44d-9f9f1f2993e1
+2024-11-28 13:01:42 - _on_audio_at_practise - exercise_service.py - INFO - asr_result: 嗯好。, pron_result: None - 09237201-06ff-4963-a44d-9f9f1f2993e1
+2024-11-28 13:01:42 - get_correct_result - exercise_correct_bot.py - INFO - exercise correct bot user_msg: 预期答案: 你nǐ3好hǎo3
+听障同学读出来的答案: 嗯ń2好hǎo3 - 09237201-06ff-4963-a44d-9f9f1f2993e1
+2024-11-28 13:01:43 - log_info - util.py - INFO - message='OpenAI API response' path=https://openai.yuanfudao.com/gpt-api/azure//openai/deployments/gpt-4/chat/completions?api-version=2024-02-15-preview processing_ms=None request_id=None response_code=200 - 09237201-06ff-4963-a44d-9f9f1f2993e1
+2024-11-28 13:01:44 - get_correct_result - exercise_correct_bot.py - INFO - exercise correct bot result: {'problem': '声母错误', 'score': 80, 'suggestion_dict': {'声母': '你 的声母是 n，发音时嘴微张，舌尖抬起，贴在上齿龈处，声带振动，不送气。而您可能发成了 ń，发音时舌尖抵住上齿龈，气流从鼻腔出来。'}, 'change_scene': False} - 09237201-06ff-4963-a44d-9f9f1f2993e1
+2024-11-28 13:01:44 - get_correct_result - exercise_correct_bot.py - INFO - {'problem': '声母错误', 'score': 80, 'suggestion_dict': {'声母': '你 的声母是 n，发音时嘴微张，舌尖抬起，贴在上齿龈处，声带振动，不送气。而您可能发成了 ń，发音时舌尖抵住上齿龈，气流从鼻腔出来。'}, 'change_scene': False} - 09237201-06ff-4963-a44d-9f9f1f2993e1
+2024-11-28 13:01:44 - build_sentence_correct_message - downward_protocol_handler.py - INFO - name_2_mp4_url: {'声母 n': 'https://common-infra-test.oss-cn-beijing.aliyuncs.com/image_math_tutor/echo_journey/mp4/initials/%E5%A3%B0%E6%AF%8Dn.mp4', '韵母 i': 'https://common-infra-test.oss-cn-beijing.aliyuncs.com/image_math_tutor/echo_journey/mp4/finals/%E9%9F%B5%E6%AF%8Di.mp4'} - 09237201-06ff-4963-a44d-9f9f1f2993e1
+2024-11-28 13:01:44 - build_input_by - exercise_bot.py - INFO - format_dict: {'STUDENT': '老师帮我纠下音吧'} - 09237201-06ff-4963-a44d-9f9f1f2993e1
+2024-11-28 13:09:37 - transcribe - asr.py - ERROR - Error occur when ASR.transcribe : Decoding failed. ffmpeg returned error code: 1
+
+Output from ffmpeg/avlib:
+
+ffmpeg version 4.4.2-0ubuntu0.22.04.1 Copyright (c) 2000-2021 the FFmpeg developers
+  built with gcc 11 (Ubuntu 11.2.0-19ubuntu1)
+  configuration: --prefix=/usr --extra-version=0ubuntu0.22.04.1 --toolchain=hardened --libdir=/usr/lib/x86_64-linux-gnu --incdir=/usr/include/x86_64-linux-gnu --arch=amd64 --enable-gpl --disable-stripping --enable-gnutls --enable-ladspa --enable-libaom --enable-libass --enable-libbluray --enable-libbs2b --enable-libcaca --enable-libcdio --enable-libcodec2 --enable-libdav1d --enable-libflite --enable-libfontconfig --enable-libfreetype --enable-libfribidi --enable-libgme --enable-libgsm --enable-libjack --enable-libmp3lame --enable-libmysofa --enable-libopenjpeg --enable-libopenmpt --enable-libopus --enable-libpulse --enable-librabbitmq --enable-librubberband --enable-libshine --enable-libsnappy --enable-libsoxr --enable-libspeex --enable-libsrt --enable-libssh --enable-libtheora --enable-libtwolame --enable-libvidstab --enable-libvorbis --enable-libvpx --enable-libwebp --enable-libx265 --enable-libxml2 --enable-libxvid --enable-libzimg --enable-libzmq --enable-libzvbi --enable-lv2 --enable-omx --enable-openal --enable-opencl --enable-opengl --enable-sdl2 --enable-pocketsphinx --enable-librsvg --enable-libmfx --enable-libdc1394 --enable-libdrm --enable-libiec61883 --enable-chromaprint --enable-frei0r --enable-libx264 --enable-shared
+  libavutil      56. 70.100 / 56. 70.100
+  libavcodec     58.134.100 / 58.134.100
+  libavformat    58. 76.100 / 58. 76.100
+  libavdevice    58. 13.100 / 58. 13.100
+  libavfilter     7.110.100 /  7.110.100
+  libswscale      5.  9.100 /  5.  9.100
+  libswresample   3.  9.100 /  3.  9.100
+  libpostproc    55.  9.100 / 55.  9.100
+[cache @ 0x55915c03b000] Inner protocol failed to seekback end : -38
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0x55915c03a3c0] moov atom not found
+[cache @ 0x55915c03b000] Statistics, cache hits:0 cache misses:0
+cache:pipe:0: Invalid data found when processing input
+ - 09237201-06ff-4963-a44d-9f9f1f2993e1
+2024-11-28 13:09:37 - _on_audio_at_practise - exercise_service.py - INFO - asr_result: None, pron_result: None - 09237201-06ff-4963-a44d-9f9f1f2993e1
+2024-11-28 13:09:44 - transcribe - kanyun.py - INFO - Kanyun transcript is: 嗯好。 - 09237201-06ff-4963-a44d-9f9f1f2993e1
+2024-11-28 13:09:44 - _on_audio_at_practise - exercise_service.py - INFO - asr_result: 嗯好。, pron_result: None - 09237201-06ff-4963-a44d-9f9f1f2993e1
+2024-11-28 13:09:44 - get_correct_result - exercise_correct_bot.py - INFO - exercise correct bot user_msg: 预期答案: 你nǐ3好hǎo3
+听障同学读出来的答案: 嗯ń2好hǎo3 - 09237201-06ff-4963-a44d-9f9f1f2993e1
+2024-11-28 13:09:44 - log_info - util.py - INFO - message='OpenAI API response' path=https://openai.yuanfudao.com/gpt-api/azure//openai/deployments/gpt-4/chat/completions?api-version=2024-02-15-preview processing_ms=None request_id=None response_code=200 - 09237201-06ff-4963-a44d-9f9f1f2993e1
+2024-11-28 13:09:45 - get_correct_result - exercise_correct_bot.py - INFO - exercise correct bot result: {'problem': '声母错误', 'score': 80, 'suggestion_dict': {'声母': '你 的声母是 n，发音时嘴微张，舌尖抬起，贴在上齿龈处，声带振动，不送气。而您可能发成了 ń，发音时舌尖抵住上齿龈，气流从鼻腔出来。'}, 'change_scene': False} - 09237201-06ff-4963-a44d-9f9f1f2993e1
+2024-11-28 13:09:45 - get_correct_result - exercise_correct_bot.py - INFO - {'problem': '声母错误', 'score': 80, 'suggestion_dict': {'声母': '你 的声母是 n，发音时嘴微张，舌尖抬起，贴在上齿龈处，声带振动，不送气。而您可能发成了 ń，发音时舌尖抵住上齿龈，气流从鼻腔出来。'}, 'change_scene': False} - 09237201-06ff-4963-a44d-9f9f1f2993e1
+2024-11-28 13:09:45 - build_sentence_correct_message - downward_protocol_handler.py - INFO - name_2_mp4_url: {'声母 n': 'https://common-infra-test.oss-cn-beijing.aliyuncs.com/image_math_tutor/echo_journey/mp4/initials/%E5%A3%B0%E6%AF%8Dn.mp4', '韵母 i': 'https://common-infra-test.oss-cn-beijing.aliyuncs.com/image_math_tutor/echo_journey/mp4/finals/%E9%9F%B5%E6%AF%8Di.mp4'} - 09237201-06ff-4963-a44d-9f9f1f2993e1
+2024-11-28 13:09:45 - build_input_by - exercise_bot.py - INFO - format_dict: {'STUDENT': '老师帮我纠下音吧'} - 09237201-06ff-4963-a44d-9f9f1f2993e1
+2024-11-28 13:14:07 - transcribe - kanyun.py - INFO - Kanyun transcript is: 嗨 - 09237201-06ff-4963-a44d-9f9f1f2993e1
+2024-11-28 13:14:07 - _on_audio_at_practise - exercise_service.py - INFO - asr_result: 嗨, pron_result: None - 09237201-06ff-4963-a44d-9f9f1f2993e1
+2024-11-28 13:14:07 - get_correct_result - exercise_correct_bot.py - INFO - exercise correct bot user_msg: 预期答案: 你nǐ3好hǎo3
+听障同学读出来的答案: 嗨hāi1 - 09237201-06ff-4963-a44d-9f9f1f2993e1
+2024-11-28 13:14:07 - log_info - util.py - INFO - message='OpenAI API response' path=https://openai.yuanfudao.com/gpt-api/azure//openai/deployments/gpt-4/chat/completions?api-version=2024-02-15-preview processing_ms=None request_id=None response_code=200 - 09237201-06ff-4963-a44d-9f9f1f2993e1
+2024-11-28 13:14:10 - get_correct_result - exercise_correct_bot.py - INFO - exercise correct bot result: {'problem': '声母和韵母错误', 'score': 50, 'suggestion_dict': {'声母': '你 的声母是 n，发音时嘴微张，舌尖抬起，贴在上齿龈处，声带振动，不送气。而您可能发成了 h，发音时舌面后部隆起与硬腭后部靠近形成缝隙，气流从缝隙间摩擦通过。', '韵母': '你 的韵母是 i，发音时嘴微张成扁平状，舌尖抵住下齿龈，舌面抬高，靠近上硬腭，声带颤动。而您可能发成了 ai，发音时先发 a 的音，然后滑向 i，气流不中断，读音轻短。'}, 'change_scene': False} - 09237201-06ff-4963-a44d-9f9f1f2993e1
+2024-11-28 13:14:10 - get_correct_result - exercise_correct_bot.py - INFO - {'problem': '声母和韵母错误', 'score': 50, 'suggestion_dict': {'声母': '你 的声母是 n，发音时嘴微张，舌尖抬起，贴在上齿龈处，声带振动，不送气。而您可能发成了 h，发音时舌面后部隆起与硬腭后部靠近形成缝隙，气流从缝隙间摩擦通过。', '韵母': '你 的韵母是 i，发音时嘴微张成扁平状，舌尖抵住下齿龈，舌面抬高，靠近上硬腭，声带颤动。而您可能发成了 ai，发音时先发 a 的音，然后滑向 i，气流不中断，读音轻短。'}, 'change_scene': False} - 09237201-06ff-4963-a44d-9f9f1f2993e1
+2024-11-28 13:14:10 - build_sentence_correct_message - downward_protocol_handler.py - INFO - name_2_mp4_url: {'声母 n': 'https://common-infra-test.oss-cn-beijing.aliyuncs.com/image_math_tutor/echo_journey/mp4/initials/%E5%A3%B0%E6%AF%8Dn.mp4', '韵母 i': 'https://common-infra-test.oss-cn-beijing.aliyuncs.com/image_math_tutor/echo_journey/mp4/finals/%E9%9F%B5%E6%AF%8Di.mp4'} - 09237201-06ff-4963-a44d-9f9f1f2993e1
+2024-11-28 13:14:10 - build_input_by - exercise_bot.py - INFO - format_dict: {'STUDENT': '老师帮我纠下音吧'} - 09237201-06ff-4963-a44d-9f9f1f2993e1
+2024-11-28 13:22:43 - disconnect - utils.py - INFO - Client #140281860071280 left the chat - 09237201-06ff-4963-a44d-9f9f1f2993e1
+2024-11-28 13:31:33 - log_info - util.py - INFO - message='OpenAI API response' path=https://openai.yuanfudao.com/gpt-api/azure//openai/deployments/gpt-4/chat/completions?api-version=2024-02-15-preview processing_ms=None request_id=None response_code=200 - bf0eebeb-8e5b-46a3-8bfc-4e1ee94b21e2
+2024-11-28 13:31:50 - disconnect - utils.py - INFO - Client #140281839284400 left the chat - bf0eebeb-8e5b-46a3-8bfc-4e1ee94b21e2
+2024-11-28 13:31:52 - log_info - util.py - INFO - message='OpenAI API response' path=https://openai.yuanfudao.com/gpt-api/azure//openai/deployments/gpt-4/chat/completions?api-version=2024-02-15-preview processing_ms=None request_id=None response_code=200 - de8d4543-1208-4941-83a6-b85298c26ec8
+2024-11-28 13:32:15 - disconnect - utils.py - INFO - Client #140281839600176 left the chat - de8d4543-1208-4941-83a6-b85298c26ec8
+2024-11-28 13:32:25 - log_info - util.py - INFO - message='OpenAI API response' path=https://openai.yuanfudao.com/gpt-api/azure//openai/deployments/gpt-4/chat/completions?api-version=2024-02-15-preview processing_ms=None request_id=None response_code=200 - 5cbb5991-9130-455c-89bb-7b10e75f7565
+2024-11-28 13:32:29 - transcribe - kanyun.py - INFO - Kanyun transcript is: Have - 5cbb5991-9130-455c-89bb-7b10e75f7565
+2024-11-28 13:32:29 - _on_audio_at_practise - exercise_service.py - INFO - asr_result: Have, pron_result: None - 5cbb5991-9130-455c-89bb-7b10e75f7565
+2024-11-28 13:32:29 - build_input_by - exercise_bot.py - INFO - format_dict: {'STUDENT': 'Have'} - 5cbb5991-9130-455c-89bb-7b10e75f7565
+2024-11-28 13:32:29 - log_info - util.py - INFO - message='OpenAI API response' path=https://openai.yuanfudao.com/gpt-api/azure//openai/deployments/gpt-4/chat/completions?api-version=2024-02-15-preview processing_ms=None request_id=None response_code=200 - 5cbb5991-9130-455c-89bb-7b10e75f7565
+2024-11-28 13:32:31 - tts_sync - azure_tts.py - INFO - Speech synthesized for text [你好] - N/A
+2024-11-28 13:32:37 - transcribe - kanyun.py - INFO - Kanyun transcript is: 嗯好。 - 5cbb5991-9130-455c-89bb-7b10e75f7565
+2024-11-28 13:32:37 - _on_audio_at_practise - exercise_service.py - INFO - asr_result: 嗯好。, pron_result: None - 5cbb5991-9130-455c-89bb-7b10e75f7565
+2024-11-28 13:32:37 - get_correct_result - exercise_correct_bot.py - INFO - exercise correct bot user_msg: 预期答案: 你nǐ3好hǎo3
+听障同学读出来的答案: 嗯ń2好hǎo3 - 5cbb5991-9130-455c-89bb-7b10e75f7565
+2024-11-28 13:32:37 - log_info - util.py - INFO - message='OpenAI API response' path=https://openai.yuanfudao.com/gpt-api/azure//openai/deployments/gpt-4/chat/completions?api-version=2024-02-15-preview processing_ms=None request_id=None response_code=200 - 5cbb5991-9130-455c-89bb-7b10e75f7565
+2024-11-28 13:32:38 - get_correct_result - exercise_correct_bot.py - INFO - exercise correct bot result: {'problem': '声母错误', 'score': 80, 'suggestion_dict': {'声母': '你 的声母是 n，发音时嘴微张，舌尖抬起，贴在上齿龈处，声带振动。而您可能发成了 ń，发音时舌尖抵住上齿龈，气流从鼻腔出来。'}, 'change_scene': False} - 5cbb5991-9130-455c-89bb-7b10e75f7565
+2024-11-28 13:32:38 - get_correct_result - exercise_correct_bot.py - INFO - {'problem': '声母错误', 'score': 80, 'suggestion_dict': {'声母': '你 的声母是 n，发音时嘴微张，舌尖抬起，贴在上齿龈处，声带振动。而您可能发成了 ń，发音时舌尖抵住上齿龈，气流从鼻腔出来。'}, 'change_scene': False} - 5cbb5991-9130-455c-89bb-7b10e75f7565
+2024-11-28 13:32:38 - build_sentence_correct_message - downward_protocol_handler.py - INFO - name_2_mp4_url: {'声母 n': 'https://common-infra-test.oss-cn-beijing.aliyuncs.com/image_math_tutor/echo_journey/mp4/initials/%E5%A3%B0%E6%AF%8Dn.mp4', '韵母 i': 'https://common-infra-test.oss-cn-beijing.aliyuncs.com/image_math_tutor/echo_journey/mp4/finals/%E9%9F%B5%E6%AF%8Di.mp4'} - 5cbb5991-9130-455c-89bb-7b10e75f7565
+2024-11-28 13:32:38 - build_input_by - exercise_bot.py - INFO - format_dict: {'STUDENT': '老师帮我纠下音吧'} - 5cbb5991-9130-455c-89bb-7b10e75f7565
